@@ -35,8 +35,8 @@ LIBS += \
     -lopengl32
 
 
-str = $$system("date /t")
-rstr = $$section(str, ., 0, 0)_$$section(str, ., 1, 1)_$$section(str, ., 2, 2)
-message($$rstr)
+#str = $$system("date /t")
+#rstr = $$section(str, ., 0, 0)_$$section(str, ., 1, 1)_$$section(str, ., 2, 2)
+#message($$rstr)
 
-TARGET = test_$${rstr}
+TARGET = test_#$${rstr}

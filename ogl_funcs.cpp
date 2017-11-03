@@ -6,10 +6,15 @@ typedef OGL_funcs cls;
 
 namespace
 {
-    float vertices[] = {
-        -0.5f, -0.5f, 0.0f,
-         0.5f, -0.5f, 0.0f,
-         0.0f,  0.5f, 0.0f
+    float vertices[] = {        
+        -0.5f, -0.5f, 0.0f, // bottom left
+        0.5f, -0.5f, 0.0f, // bottom right
+        0.5f, 0.5f, 0.0f, // top right
+        -0.5f, 0.5f, 0.0f // top left
+    };
+    unsigned int indices[] = {
+        0, 1, 3,
+        1, 2, 3
     };
 
     const quint32 SHD_LOCATION_A_POS = 0;
@@ -33,6 +38,7 @@ namespace
             "}";
 
     QOpenGLVertexArrayObject VAO;
+    quint32 EBO = 0;
     quint32 VBO = 0;
     quint32 vertexShaderId = 0;
     quint32 fragmentShaderId = 0;
@@ -67,13 +73,19 @@ quint32 cls::createShader(GLenum type, QString source)
     return shaderId;
 }
 
-void cls::createVBOForVertices()
+void cls::createBufObjectsForVertices()
 {
     quint32 bufCountForGen = 1;
     glGenBuffers(bufCountForGen, &VBO);
     glBindBuffer(GL_ARRAY_BUFFER, VBO);
     glBufferData(GL_ARRAY_BUFFER, sizeof(vertices),
                  static_cast<void*>(vertices), GL_STATIC_DRAW);
+
+    glGenBuffers(bufCountForGen, &EBO);
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
+    glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices),
+                 static_cast<void*>(indices), GL_STATIC_DRAW);
+
 }
 
 void cls::createShaders()
@@ -141,7 +153,7 @@ void cls::initializeGL()
     assert(VAO.create());
     VAO.bind();
 
-    createVBOForVertices();
+    createBufObjectsForVertices();
 
     createShaders();
 
@@ -151,18 +163,27 @@ void cls::initializeGL()
 
     setAttribFroVertexAPos();
 
-    VAO.release();
+    VAO.release();    
 }
 
 void cls::paintGL()
 {
     glUseProgram(shaderProgramId);
     VAO.bind();
-    glDrawArrays(GL_TRIANGLES, 0, 3);
+//    glDrawArrays(GL_TRIANGLES, 0, 3);
+    glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
     VAO.release();
 }
 
 void OGL_funcs::resizeGL(int w, int h)
 {
     glViewport(0, 0, w, h);
+    if (h > 200)
+    {
+        glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+    }
+    else
+    {
+        glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+    }
 }
