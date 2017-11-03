@@ -1,0 +1,3 @@
+[submodule "UsableClass"]
+	path = UsableClass
+	url = ssh://admin@localhost:29418/UsableClass.git
