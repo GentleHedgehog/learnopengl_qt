@@ -6,15 +6,28 @@ typedef OGL_funcs cls;
 
 namespace
 {
-    float vertices[] = {        
-        -0.5f, -0.5f, 0.0f, // bottom left
-        0.5f, -0.5f, 0.0f, // bottom right
-        0.5f, 0.5f, 0.0f, // top right
-        -0.5f, 0.5f, 0.0f // top left
+    float vertices_triangles[] = {
+        -0.5f,  0.5f, 0.0f, // top
+        -0.9f, -0.5f, 0.0f, // bottom left
+        0.0f, -0.5f, 0.0f, // bottom right
+        0.5f,  0.5f, 0.0f, // top
+//        0.0f, -0.5f, 0.0f, // bottom left
+        0.9f, -0.5f, 0.0f, // bottom right
     };
-    unsigned int indices[] = {
-        0, 1, 3,
-        1, 2, 3
+
+    float vertices_second_triangle[] = {
+        0.5f,  0.5f, 0.0f, // top
+        0.9f, -0.5f, 0.0f, // bottom left
+        0.1f, -0.5f, 0.0f, // bottom right
+    };
+
+    unsigned int indices_triangles[] = {
+        1, 0, 2,
+        3, 4, 2,
+    };
+
+    unsigned int indices_second_triangle[] = {
+        0, 1, 2,
     };
 
     const quint32 SHD_LOCATION_A_POS = 0;
@@ -78,13 +91,13 @@ void cls::createBufObjectsForVertices()
     quint32 bufCountForGen = 1;
     glGenBuffers(bufCountForGen, &VBO);
     glBindBuffer(GL_ARRAY_BUFFER, VBO);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(vertices),
-                 static_cast<void*>(vertices), GL_STATIC_DRAW);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(vertices_triangles),
+                 static_cast<void*>(vertices_triangles), GL_STATIC_DRAW);
 
     glGenBuffers(bufCountForGen, &EBO);
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
-    glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices),
-                 static_cast<void*>(indices), GL_STATIC_DRAW);
+    glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices_triangles),
+                 static_cast<void*>(indices_triangles), GL_STATIC_DRAW);
 
 }
 
