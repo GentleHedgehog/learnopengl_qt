@@ -30,6 +30,8 @@ namespace
     const quint32 SHD_ELEMENT_COUNT_A_POS = 3;
     const quint32 SHD_STRIDE_A_POS = 3 * sizeof(GL_FLOAT);
     const quint32 SHD_OFFSET_A_POS = 0;
+
+
     QString vertexShaderCode =
             "#version 330 core\n"
             "layout (location = "+
@@ -39,19 +41,32 @@ namespace
             "gl_Position = vec4(aPos.x, aPos.y, aPos.z, 1.0);\n"
             "}";
 
-    QString fragmentShaderCode =
+    sShaderProgram programUsual(
+            vertexShaderCode
+            ,
+
             "#version 330 core\n"
             "out vec4 color;\n\n"
             "void main(){\n"
             "color = vec4(1.0, 0.5, 0.2, 1.0);\n"
-            "}";
+            "}"
+            );
+
+    sShaderProgram programYellow(
+            vertexShaderCode
+            ,
+
+            "#version 330 core\n"
+            "out vec4 color;\n\n"
+            "void main(){\n"
+            "color = vec4(1.0, 1.0, 0.0, 1.0);\n"
+            "}"
+            );
+
 
     QOpenGLVertexArrayObject VAO[2];
     quint32 EBO[2] = {0};
     quint32 VBO[2] = {0};
-    quint32 vertexShaderId = 0;
-    quint32 fragmentShaderId = 0;
-    quint32 shaderProgramId = 0;
 }
 
 cls::OGL_funcs(QWidget *parent) :
@@ -90,10 +105,10 @@ void cls::createBufObjectsForVertices(bool isFirstTriangle)
         glGenBuffers(bufCountForGen, VBO);
         glGenBuffers(bufCountForGen, EBO);
 
-        DEBUG_NM(VBO[0]);
-        DEBUG_NM(EBO[0]);
-        DEBUG_NM(VBO[1]);
-        DEBUG_NM(EBO[1]);
+//        DEBUG_NM(VBO[0]);
+//        DEBUG_NM(EBO[0]);
+//        DEBUG_NM(VBO[1]);
+//        DEBUG_NM(EBO[1]);
 
         glBindBuffer(GL_ARRAY_BUFFER, VBO[0]);
         glBufferData(GL_ARRAY_BUFFER, sizeof(vertices_first_triangle),
@@ -116,44 +131,48 @@ void cls::createBufObjectsForVertices(bool isFirstTriangle)
 
 }
 
-void cls::createShaders()
+void cls::createShaders(sShaderProgram &prog)
 {
-    vertexShaderId = createShader(GL_VERTEX_SHADER,
-                                  vertexShaderCode);
-    fragmentShaderId = createShader(GL_FRAGMENT_SHADER,
-                                    fragmentShaderCode);
+    prog.vertexShaderId =
+            createShader(GL_VERTEX_SHADER,
+                         prog.vertexShaderCode);
+    prog.fragmentShaderId =
+            createShader(GL_FRAGMENT_SHADER,
+                         prog.fragmentShaderCode);
 }
 
-void cls::createProgramWithShaders()
+void cls::createProgramWithShaders(sShaderProgram &prog)
 {
-    shaderProgramId = glCreateProgram();
-    glAttachShader(shaderProgramId, vertexShaderId);
-    glAttachShader(shaderProgramId, fragmentShaderId);
-    glLinkProgram(shaderProgramId);
+    prog.shaderProgramId = glCreateProgram();
+    glAttachShader(prog.shaderProgramId,
+                   prog.vertexShaderId);
+    glAttachShader(prog.shaderProgramId,
+                   prog.fragmentShaderId);
+    glLinkProgram(prog.shaderProgramId);
 
 
     int success = 0;
     char infoLog[512] = {0};
-    glGetProgramiv(shaderProgramId, GL_LINK_STATUS, &success);
+    glGetProgramiv(prog.shaderProgramId, GL_LINK_STATUS, &success);
     if (!success)
     {
-        glGetProgramInfoLog(shaderProgramId,
+        glGetProgramInfoLog(prog.shaderProgramId,
                             sizeof(infoLog),
                             NULL, infoLog);
         DEBUG_NM(infoLog);
     }
     else
     {
-        glUseProgram(shaderProgramId);
+        glUseProgram(prog.shaderProgramId);
     }
 }
 
-void cls::deleteShaders()
+void cls::deleteShaders(sShaderProgram &prog)
 {
-    glDeleteShader(vertexShaderId);
-    vertexShaderId = 0;
-    glDeleteShader(fragmentShaderId);
-    fragmentShaderId = 0;
+    glDeleteShader(prog.vertexShaderId);
+    prog.vertexShaderId = 0;
+    glDeleteShader(prog.fragmentShaderId);
+    prog.fragmentShaderId = 0;
 }
 
 void cls::setAttribFroVertexAPos()
@@ -192,23 +211,25 @@ void cls::initializeGL()
     VAO[1].release();
 
 
-    createShaders();
+    createShaders(programUsual);
+    createProgramWithShaders(programUsual);
+    deleteShaders(programUsual);
 
-    createProgramWithShaders();
-
-    deleteShaders();
-
+    createShaders(programYellow);
+    createProgramWithShaders(programYellow);
+    deleteShaders(programYellow);
 
 }
 
 void cls::paintGL()
 {
-    glUseProgram(shaderProgramId);
+    glUseProgram(programUsual.shaderProgramId);
     VAO[0].bind();
 //    glDrawArrays(GL_TRIANGLES, 0, 3);
     glDrawElements(GL_TRIANGLES, 3, GL_UNSIGNED_INT, 0);
     VAO[0].release();
 
+    glUseProgram(programYellow.shaderProgramId);
     VAO[1].bind();
 //    glDrawArrays(GL_TRIANGLES, 0, 3);
     glDrawElements(GL_TRIANGLES, 3, GL_UNSIGNED_INT, 0);

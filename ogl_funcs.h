@@ -4,6 +4,23 @@
 #include <QGLWidget>
 #include <QGLFunctions>
 
+struct sShaderProgram{
+    quint32 vertexShaderId = 0;
+    quint32 fragmentShaderId = 0;
+    quint32 shaderProgramId = 0;
+
+    QString vertexShaderCode;
+    QString fragmentShaderCode;
+
+    sShaderProgram(QString vrtxShaderCode,
+                   QString frgmntShaderCode)
+    {
+        vertexShaderCode = vrtxShaderCode;
+        fragmentShaderCode = frgmntShaderCode;
+    }
+};
+
+
 class OGL_funcs :
         public QGLWidget,
         public QGLFunctions
@@ -14,11 +31,12 @@ public:
 
 
 private:
+
     quint32 createShader(GLenum type, QString source);
     void createBufObjectsForVertices(bool isFirstTriangle);
-    void createShaders();
-    void createProgramWithShaders();
-    void deleteShaders();
+    void createShaders(sShaderProgram &prog);
+    void createProgramWithShaders(sShaderProgram &prog);
+    void deleteShaders(sShaderProgram &prog);
     void setAttribFroVertexAPos();
 
 
