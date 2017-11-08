@@ -6,24 +6,20 @@ typedef OGL_funcs cls;
 
 namespace
 {
-    float vertices_triangles[] = {
+    float vertices_first_triangle[] = {
         -0.5f,  0.5f, 0.0f, // top
         -0.9f, -0.5f, 0.0f, // bottom left
         0.0f, -0.5f, 0.0f, // bottom right
-        0.5f,  0.5f, 0.0f, // top
-//        0.0f, -0.5f, 0.0f, // bottom left
-        0.9f, -0.5f, 0.0f, // bottom right
     };
 
     float vertices_second_triangle[] = {
         0.5f,  0.5f, 0.0f, // top
-        0.9f, -0.5f, 0.0f, // bottom left
-        0.1f, -0.5f, 0.0f, // bottom right
+        0.0f, -0.5f, 0.0f, // bottom left
+        0.9f, -0.5f, 0.0f, // bottom right
     };
 
-    unsigned int indices_triangles[] = {
-        1, 0, 2,
-        3, 4, 2,
+    unsigned int indices_first_triangle[] = {
+        0, 1, 2,
     };
 
     unsigned int indices_second_triangle[] = {
@@ -50,9 +46,9 @@ namespace
             "color = vec4(1.0, 0.5, 0.2, 1.0);\n"
             "}";
 
-    QOpenGLVertexArrayObject VAO;
-    quint32 EBO = 0;
-    quint32 VBO = 0;
+    QOpenGLVertexArrayObject VAO[2];
+    quint32 EBO[2] = {0};
+    quint32 VBO[2] = {0};
     quint32 vertexShaderId = 0;
     quint32 fragmentShaderId = 0;
     quint32 shaderProgramId = 0;
@@ -86,18 +82,37 @@ quint32 cls::createShader(GLenum type, QString source)
     return shaderId;
 }
 
-void cls::createBufObjectsForVertices()
+void cls::createBufObjectsForVertices(bool isFirstTriangle)
 {
-    quint32 bufCountForGen = 1;
-    glGenBuffers(bufCountForGen, &VBO);
-    glBindBuffer(GL_ARRAY_BUFFER, VBO);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(vertices_triangles),
-                 static_cast<void*>(vertices_triangles), GL_STATIC_DRAW);
+    if (isFirstTriangle)
+    {
+        quint32 bufCountForGen = 2;
+        glGenBuffers(bufCountForGen, VBO);
+        glGenBuffers(bufCountForGen, EBO);
 
-    glGenBuffers(bufCountForGen, &EBO);
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
-    glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices_triangles),
-                 static_cast<void*>(indices_triangles), GL_STATIC_DRAW);
+        DEBUG_NM(VBO[0]);
+        DEBUG_NM(EBO[0]);
+        DEBUG_NM(VBO[1]);
+        DEBUG_NM(EBO[1]);
+
+        glBindBuffer(GL_ARRAY_BUFFER, VBO[0]);
+        glBufferData(GL_ARRAY_BUFFER, sizeof(vertices_first_triangle),
+                     static_cast<void*>(vertices_first_triangle), GL_STATIC_DRAW);
+
+        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO[0]);
+        glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices_first_triangle),
+                     static_cast<void*>(indices_first_triangle), GL_STATIC_DRAW);
+    }
+    else
+    {
+        glBindBuffer(GL_ARRAY_BUFFER, VBO[1]);
+        glBufferData(GL_ARRAY_BUFFER, sizeof(vertices_second_triangle),
+                     static_cast<void*>(vertices_second_triangle), GL_STATIC_DRAW);
+
+        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO[1]);
+        glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices_second_triangle),
+                     static_cast<void*>(indices_second_triangle), GL_STATIC_DRAW);
+    }
 
 }
 
@@ -163,10 +178,19 @@ void cls::initializeGL()
     //    DEBUG_NM(QGLContext::currentContext()->
     //             format().minorVersion());
 
-    assert(VAO.create());
-    VAO.bind();
+    assert(VAO[0].create());
+    VAO[0].bind();
+    createBufObjectsForVertices(true);
+    setAttribFroVertexAPos();
+    VAO[0].release();
 
-    createBufObjectsForVertices();
+
+    assert(VAO[1].create());
+    VAO[1].bind();
+    createBufObjectsForVertices(false);
+    setAttribFroVertexAPos();
+    VAO[1].release();
+
 
     createShaders();
 
@@ -174,18 +198,21 @@ void cls::initializeGL()
 
     deleteShaders();
 
-    setAttribFroVertexAPos();
 
-    VAO.release();    
 }
 
 void cls::paintGL()
 {
     glUseProgram(shaderProgramId);
-    VAO.bind();
+    VAO[0].bind();
 //    glDrawArrays(GL_TRIANGLES, 0, 3);
-    glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
-    VAO.release();
+    glDrawElements(GL_TRIANGLES, 3, GL_UNSIGNED_INT, 0);
+    VAO[0].release();
+
+    VAO[1].bind();
+//    glDrawArrays(GL_TRIANGLES, 0, 3);
+    glDrawElements(GL_TRIANGLES, 3, GL_UNSIGNED_INT, 0);
+    VAO[1].release();
 }
 
 void OGL_funcs::resizeGL(int w, int h)

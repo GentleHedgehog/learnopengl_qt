@@ -15,7 +15,7 @@ public:
 
 private:
     quint32 createShader(GLenum type, QString source);
-    void createBufObjectsForVertices();
+    void createBufObjectsForVertices(bool isFirstTriangle);
     void createShaders();
     void createProgramWithShaders();
     void deleteShaders();
