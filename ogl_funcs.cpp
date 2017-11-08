@@ -36,9 +36,11 @@ namespace
             "#version 330 core\n"
             "layout (location = "+
             QString::number(SHD_LOCATION_A_POS)+
-            ") in vec3 aPos;\n\n"
+            ") in vec3 aPos;\n"
+            "out vec4 usualColor;\n\n"
             "void main(){\n"
             "gl_Position = vec4(aPos.x, aPos.y, aPos.z, 1.0);\n"
+            "usualColor = vec4(1.0, 0.5, 0.2, 1.0);\n"
             "}";
 
     sShaderProgram programUsual(
@@ -46,9 +48,10 @@ namespace
             ,
 
             "#version 330 core\n"
+            "in vec4 usualColor;\n"
             "out vec4 color;\n\n"
             "void main(){\n"
-            "color = vec4(1.0, 0.5, 0.2, 1.0);\n"
+            "color = usualColor;\n"
             "}"
             );
 
@@ -191,6 +194,10 @@ void cls::initializeGL()
 
 
     initializeGLFunctions(QGLContext::currentContext());
+
+    qint32 nMaxVertexAttribs = 0;
+    glGetIntegerv(GL_MAX_VERTEX_ATTRIBS, &nMaxVertexAttribs);
+    DEBUG_NM(nMaxVertexAttribs);
 
     //    DEBUG_NM(QGLContext::currentContext()->
     //             format().majorVersion());
