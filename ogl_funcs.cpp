@@ -60,9 +60,10 @@ namespace
             ,
 
             "#version 330 core\n"
+            "uniform vec4 uniformColor;\n"
             "out vec4 color;\n\n"
             "void main(){\n"
-            "color = vec4(1.0, 1.0, 0.0, 1.0);\n"
+            "color = uniformColor;\n"
             "}"
             );
 
@@ -237,6 +238,13 @@ void cls::paintGL()
     VAO[0].release();
 
     glUseProgram(programYellow.shaderProgramId);
+
+    qint32 currentTimeSec = QTime::currentTime().second();
+    float greenPart = qSin(currentTimeSec) / 2.0f + 0.5f;
+    GLint uniformVarId = glGetUniformLocation(
+                programYellow.shaderProgramId, "uniformColor");
+    glUniform4f(uniformVarId, 0.0f, greenPart, 0.0f, 1.0f);
+
     VAO[1].bind();
 //    glDrawArrays(GL_TRIANGLES, 0, 3);
     glDrawElements(GL_TRIANGLES, 3, GL_UNSIGNED_INT, 0);
