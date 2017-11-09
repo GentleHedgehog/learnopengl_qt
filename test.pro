@@ -14,7 +14,8 @@ TEMPLATE = app
 SOURCES += main.cpp \
     my_gl_widget.cpp \
     ogl_funcs.cpp \
-    UsableClass/Macros/macros.cpp
+    UsableClass/Macros/macros.cpp \
+    shader_program_set.cpp
 
 #INCLUDEPATH += \
 #            "C:\Program Files (x86)\Microsoft SDKs\Windows\v7.0A\Include\gl"
@@ -26,7 +27,8 @@ SOURCES += main.cpp \
 HEADERS += \
     my_gl_widget.h \
     ogl_funcs.h \
-    UsableClass/Macros/macros.h
+    UsableClass/Macros/macros.h \
+    shader_program_set.h
 
 #LIBS += \
 #    -LC:\Qt\Qt5.7.0\5.7\mingw53_32\lib\libQt5OpenGL.a -lopengl32

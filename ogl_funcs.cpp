@@ -2,6 +2,7 @@
 #include "UsableClass/Macros/macros.h"
 #include <QOpenGLVertexArrayObject>
 
+
 typedef OGL_funcs cls;
 
 namespace
@@ -52,7 +53,7 @@ namespace
             "usualColor = vec4(aColor, 1.0);\n"
             "}";
 
-    sShaderProgram programUsual(
+    ShaderProgramSet programUsual(
             vertexShaderCode
             ,
 
@@ -64,7 +65,7 @@ namespace
             "}"
             );
 
-    sShaderProgram programYellow(
+    ShaderProgramSet programYellow(
             vertexShaderCode
             ,
 
@@ -86,28 +87,6 @@ cls::OGL_funcs(QWidget *parent) :
     QGLWidget(parent)
 {
     resize(200, 200);
-}
-
-quint32 cls::createShader(GLenum type, QString source)
-{
-    quint32 shaderId = glCreateShader(type);
-    quint32 stringCount = 1;
-    const char *str = source.toUtf8().data();
-    glShaderSource(shaderId, stringCount,
-                   &str, NULL);
-    glCompileShader(shaderId);
-
-    int success = 0;
-    char infoLog[512] = {0};
-    glGetShaderiv(shaderId, GL_COMPILE_STATUS, &success);
-    if (!success)
-    {
-        glGetShaderInfoLog(shaderId, sizeof(infoLog),
-                           NULL, infoLog);
-        DEBUG_NM(infoLog);
-    }
-
-    return shaderId;
 }
 
 void cls::createBufObjectsForVertices(bool isFirstTriangle)
@@ -144,50 +123,6 @@ void cls::createBufObjectsForVertices(bool isFirstTriangle)
 
 }
 
-void cls::createShaders(sShaderProgram &prog)
-{
-    prog.vertexShaderId =
-            createShader(GL_VERTEX_SHADER,
-                         prog.vertexShaderCode);
-    prog.fragmentShaderId =
-            createShader(GL_FRAGMENT_SHADER,
-                         prog.fragmentShaderCode);
-}
-
-void cls::createProgramWithShaders(sShaderProgram &prog)
-{
-    prog.shaderProgramId = glCreateProgram();
-    glAttachShader(prog.shaderProgramId,
-                   prog.vertexShaderId);
-    glAttachShader(prog.shaderProgramId,
-                   prog.fragmentShaderId);
-    glLinkProgram(prog.shaderProgramId);
-
-
-    int success = 0;
-    char infoLog[512] = {0};
-    glGetProgramiv(prog.shaderProgramId, GL_LINK_STATUS, &success);
-    if (!success)
-    {
-        glGetProgramInfoLog(prog.shaderProgramId,
-                            sizeof(infoLog),
-                            NULL, infoLog);
-        DEBUG_NM(infoLog);
-    }
-    else
-    {
-        glUseProgram(prog.shaderProgramId);
-    }
-}
-
-void cls::deleteShaders(sShaderProgram &prog)
-{
-    glDeleteShader(prog.vertexShaderId);
-    prog.vertexShaderId = 0;
-    glDeleteShader(prog.fragmentShaderId);
-    prog.fragmentShaderId = 0;
-}
-
 void cls::setAttribFroVertexAPos()
 {
     glVertexAttribPointer(SHD_LOCATION_A_POS,
@@ -212,14 +147,14 @@ void cls::initializeGL()
 
     initializeGLFunctions(QGLContext::currentContext());
 
-    qint32 nMaxVertexAttribs = 0;
-    glGetIntegerv(GL_MAX_VERTEX_ATTRIBS, &nMaxVertexAttribs);
-    DEBUG_NM(nMaxVertexAttribs);
+//    qint32 nMaxVertexAttribs = 0;
+//    glGetIntegerv(GL_MAX_VERTEX_ATTRIBS, &nMaxVertexAttribs);
+//    DEBUG_NM(nMaxVertexAttribs);
 
-    //    DEBUG_NM(QGLContext::currentContext()->
-    //             format().majorVersion());
-    //    DEBUG_NM(QGLContext::currentContext()->
-    //             format().minorVersion());
+//    DEBUG_NM(QGLContext::currentContext()->
+//             format().majorVersion());
+//    DEBUG_NM(QGLContext::currentContext()->
+//             format().minorVersion());
 
     assert(VAO[0].create());
     VAO[0].bind();
@@ -234,10 +169,10 @@ void cls::initializeGL()
 //    setAttribFroVertexAPos();
 //    VAO[1].release();
 
-
-    createShaders(programUsual);
-    createProgramWithShaders(programUsual);
-    deleteShaders(programUsual);
+    programUsual.initialize(
+                QGLContext::currentContext());
+    programUsual.compile();
+    programUsual.link();
 
 //    createShaders(programYellow);
 //    createProgramWithShaders(programYellow);
@@ -247,7 +182,7 @@ void cls::initializeGL()
 
 void cls::paintGL()
 {
-    glUseProgram(programUsual.shaderProgramId);
+    programUsual.useProgram();
     VAO[0].bind();
 //    glDrawArrays(GL_TRIANGLES, 0, 3);
     glDrawElements(GL_TRIANGLES, 3, GL_UNSIGNED_INT, 0);
@@ -270,7 +205,7 @@ void cls::paintGL()
 void OGL_funcs::resizeGL(int w, int h)
 {
     glViewport(0, 0, w, h);
-    if (h > 200)
+    if (h > 400)
     {
         glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
     }
@@ -279,3 +214,4 @@ void OGL_funcs::resizeGL(int w, int h)
         glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
     }
 }
+
