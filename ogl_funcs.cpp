@@ -9,9 +9,9 @@ namespace
 {
     float vertices_first_triangle[] = {
         // vertex           // color
-        -0.5f,  0.5f, 0.0f, 1.0, 0.0, 0.0,  // top
-        -0.9f, -0.5f, 0.0f, 0.0, 1.0, 0.0, // bottom left
-        0.0f, -0.5f, 0.0f,  0.0, 0.0, 1.0, // bottom right
+        0.5f,  0.5f, 0.0f, 1.0, 0.0, 0.0,  // top
+        0.1f,  0.0f, 0.0f, 0.0, 1.0, 0.0, // bottom left
+        0.9f,  0.0f, 0.0f, 0.0, 0.0, 1.0, // bottom right
     };
 
     float vertices_second_triangle[] = {
@@ -50,7 +50,7 @@ namespace
             "out vec4 usualColor;\n\n"
             "void main(){\n"
             "gl_Position = vec4(aPos.x, aPos.y, aPos.z, 1.0);\n"
-            "usualColor = vec4(aColor, 1.0);\n"
+            "usualColor = vec4(aPos, 1.0);\n"
             "}";
 
     ShaderProgramSet programUsual(
@@ -146,6 +146,8 @@ void cls::initializeGL()
 
 
     initializeGLFunctions(QGLContext::currentContext());
+
+    glClearColor(1.0, 1.0, 1.0, 1.0);
 
 //    qint32 nMaxVertexAttribs = 0;
 //    glGetIntegerv(GL_MAX_VERTEX_ATTRIBS, &nMaxVertexAttribs);
