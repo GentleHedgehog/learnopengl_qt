@@ -7,9 +7,10 @@ typedef OGL_funcs cls;
 namespace
 {
     float vertices_first_triangle[] = {
-        -0.5f,  0.5f, 0.0f, // top
-        -0.9f, -0.5f, 0.0f, // bottom left
-        0.0f, -0.5f, 0.0f, // bottom right
+        // vertex           // color
+        -0.5f,  0.5f, 0.0f, 1.0, 0.0, 0.0,  // top
+        -0.9f, -0.5f, 0.0f, 0.0, 1.0, 0.0, // bottom left
+        0.0f, -0.5f, 0.0f,  0.0, 0.0, 1.0, // bottom right
     };
 
     float vertices_second_triangle[] = {
@@ -28,8 +29,13 @@ namespace
 
     const quint32 SHD_LOCATION_A_POS = 0;
     const quint32 SHD_ELEMENT_COUNT_A_POS = 3;
-    const quint32 SHD_STRIDE_A_POS = 3 * sizeof(GL_FLOAT);
+    const quint32 SHD_STRIDE_A_POS = 6 * sizeof(GL_FLOAT);
     const quint32 SHD_OFFSET_A_POS = 0;
+
+    const quint32 SHD_LOCATION_A_COLOR = 1;
+    const quint32 SHD_ELEMENT_COUNT_A_COLOR = 3;
+    const quint32 SHD_STRIDE_A_COLOR = 6 * sizeof(GL_FLOAT);
+    const quint32 SHD_OFFSET_A_COLOR = 3 * sizeof(GL_FLOAT);
 
 
     QString vertexShaderCode =
@@ -37,10 +43,13 @@ namespace
             "layout (location = "+
             QString::number(SHD_LOCATION_A_POS)+
             ") in vec3 aPos;\n"
+            "layout (location = "+
+            QString::number(SHD_LOCATION_A_COLOR)+
+            ") in vec3 aColor;\n"
             "out vec4 usualColor;\n\n"
             "void main(){\n"
             "gl_Position = vec4(aPos.x, aPos.y, aPos.z, 1.0);\n"
-            "usualColor = vec4(1.0, 0.5, 0.2, 1.0);\n"
+            "usualColor = vec4(aColor, 1.0);\n"
             "}";
 
     sShaderProgram programUsual(
@@ -187,6 +196,13 @@ void cls::setAttribFroVertexAPos()
                           SHD_STRIDE_A_POS,
                           (void*)SHD_OFFSET_A_POS);
     glEnableVertexAttribArray(SHD_LOCATION_A_POS);
+
+    glVertexAttribPointer(SHD_LOCATION_A_COLOR,
+                          SHD_ELEMENT_COUNT_A_COLOR,
+                          GL_FLOAT, GL_FALSE,
+                          SHD_STRIDE_A_COLOR,
+                          (void*)SHD_OFFSET_A_COLOR);
+    glEnableVertexAttribArray(SHD_LOCATION_A_COLOR);
 }
 
 void cls::initializeGL()
@@ -212,20 +228,20 @@ void cls::initializeGL()
     VAO[0].release();
 
 
-    assert(VAO[1].create());
-    VAO[1].bind();
-    createBufObjectsForVertices(false);
-    setAttribFroVertexAPos();
-    VAO[1].release();
+//    assert(VAO[1].create());
+//    VAO[1].bind();
+//    createBufObjectsForVertices(false);
+//    setAttribFroVertexAPos();
+//    VAO[1].release();
 
 
     createShaders(programUsual);
     createProgramWithShaders(programUsual);
     deleteShaders(programUsual);
 
-    createShaders(programYellow);
-    createProgramWithShaders(programYellow);
-    deleteShaders(programYellow);
+//    createShaders(programYellow);
+//    createProgramWithShaders(programYellow);
+//    deleteShaders(programYellow);
 
 }
 
@@ -237,18 +253,18 @@ void cls::paintGL()
     glDrawElements(GL_TRIANGLES, 3, GL_UNSIGNED_INT, 0);
     VAO[0].release();
 
-    glUseProgram(programYellow.shaderProgramId);
+//    glUseProgram(programYellow.shaderProgramId);
 
-    qint32 currentTimeSec = QTime::currentTime().second();
-    float greenPart = qSin(currentTimeSec) / 2.0f + 0.5f;
-    GLint uniformVarId = glGetUniformLocation(
-                programYellow.shaderProgramId, "uniformColor");
-    glUniform4f(uniformVarId, 0.0f, greenPart, 0.0f, 1.0f);
+//    qint32 currentTimeSec = QTime::currentTime().second();
+//    float greenPart = qSin(currentTimeSec) / 2.0f + 0.5f;
+//    GLint uniformVarId = glGetUniformLocation(
+//                programYellow.shaderProgramId, "uniformColor");
+//    glUniform4f(uniformVarId, 0.0f, greenPart, 0.0f, 1.0f);
 
-    VAO[1].bind();
-//    glDrawArrays(GL_TRIANGLES, 0, 3);
-    glDrawElements(GL_TRIANGLES, 3, GL_UNSIGNED_INT, 0);
-    VAO[1].release();
+//    VAO[1].bind();
+////    glDrawArrays(GL_TRIANGLES, 0, 3);
+//    glDrawElements(GL_TRIANGLES, 3, GL_UNSIGNED_INT, 0);
+//    VAO[1].release();
 }
 
 void OGL_funcs::resizeGL(int w, int h)
