@@ -1,6 +1,7 @@
 #include "ogl_funcs.h"
 #include "UsableClass/Macros/macros.h"
 #include <QOpenGLVertexArrayObject>
+#include <QImage>
 
 
 typedef OGL_funcs cls;
@@ -8,10 +9,10 @@ typedef OGL_funcs cls;
 namespace
 {
     float vertices_first_triangle[] = {
-        // vertex           // color
-        0.5f,  0.5f, 0.0f, 1.0, 0.0, 0.0,  // top
-        0.1f,  0.0f, 0.0f, 0.0, 1.0, 0.0, // bottom left
-        0.9f,  0.0f, 0.0f, 0.0, 0.0, 1.0, // bottom right
+        // vertex               // color            // tex coord
+        0.0f,  1.0f, 0.0f,      1.0, 0.0, 0.0,      0.5f, 1.0f,// top
+       -1.0f, -1.0f, 0.0f,      0.0, 1.0, 0.0,      0.0f, 0.0f,// bottom left
+        1.0f, -1.0f, 0.0f,      0.0, 0.0, 1.0,      1.0f, 0.0f,// bottom right
     };
 
     float vertices_second_triangle[] = {
@@ -30,13 +31,18 @@ namespace
 
     const quint32 SHD_LOCATION_A_POS = 0;
     const quint32 SHD_ELEMENT_COUNT_A_POS = 3;
-    const quint32 SHD_STRIDE_A_POS = 6 * sizeof(GL_FLOAT);
+    const quint32 SHD_STRIDE_A_POS = 8 * sizeof(GL_FLOAT);
     const quint32 SHD_OFFSET_A_POS = 0;
 
     const quint32 SHD_LOCATION_A_COLOR = 1;
     const quint32 SHD_ELEMENT_COUNT_A_COLOR = 3;
-    const quint32 SHD_STRIDE_A_COLOR = 6 * sizeof(GL_FLOAT);
+    const quint32 SHD_STRIDE_A_COLOR = 8 * sizeof(GL_FLOAT);
     const quint32 SHD_OFFSET_A_COLOR = 3 * sizeof(GL_FLOAT);
+
+    const quint32 SHD_LOCATION_A_TEX_COORD = 2;
+    const quint32 SHD_ELEMENT_COUNT_A_TEX_COORD = 2;
+    const quint32 SHD_STRIDE_A_TEX_COORD = 8 * sizeof(GL_FLOAT);
+    const quint32 SHD_OFFSET_A_TEX_COORD = 6 * sizeof(GL_FLOAT);
 
 
     QString vertexShaderCode =
@@ -47,10 +53,15 @@ namespace
             "layout (location = "+
             QString::number(SHD_LOCATION_A_COLOR)+
             ") in vec3 aColor;\n"
+            "layout (location = "+
+            QString::number(SHD_LOCATION_A_TEX_COORD)+
+            ") in vec2 aTexCoord;\n"
+            "out vec2 texCoord;\n"
             "out vec4 usualColor;\n\n"
             "void main(){\n"
             "gl_Position = vec4(aPos.x, aPos.y, aPos.z, 1.0);\n"
-            "usualColor = vec4(aPos, 1.0);\n"
+            "usualColor = vec4(aColor, 1.0);\n"
+            "texCoord = aTexCoord;\n"
             "}";
 
     ShaderProgramSet programUsual(
@@ -59,9 +70,12 @@ namespace
 
             "#version 330 core\n"
             "in vec4 usualColor;\n"
-            "out vec4 color;\n\n"
+            "in vec2 texCoord;\n"
+            "out vec4 fragColor;\n\n"
+            "uniform sampler2D ourTexture;\n\n"
             "void main(){\n"
-            "color = usualColor;\n"
+//            "fragColor = usualColor;\n"
+            "fragColor = texture(ourTexture, texCoord);\n"
             "}"
             );
 
@@ -81,6 +95,7 @@ namespace
     QOpenGLVertexArrayObject VAO[2];
     quint32 EBO[2] = {0};
     quint32 VBO[2] = {0};
+    quint32 texId = 0;
 }
 
 cls::OGL_funcs(QWidget *parent) :
@@ -138,6 +153,51 @@ void cls::setAttribFroVertexAPos()
                           SHD_STRIDE_A_COLOR,
                           (void*)SHD_OFFSET_A_COLOR);
     glEnableVertexAttribArray(SHD_LOCATION_A_COLOR);
+
+    glVertexAttribPointer(SHD_LOCATION_A_TEX_COORD,
+                          SHD_ELEMENT_COUNT_A_TEX_COORD,
+                          GL_FLOAT, GL_FALSE,
+                          SHD_STRIDE_A_TEX_COORD,
+                          (void*)SHD_OFFSET_A_TEX_COORD);
+    glEnableVertexAttribArray(SHD_LOCATION_A_TEX_COORD);
+}
+
+void cls::textureSettings()
+{
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_MIRRORED_REPEAT);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_MIRRORED_REPEAT);
+//    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+    // linearly interpolates between the
+    // two closest mipmaps and samples
+    // the texture via linear interpolation:
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+}
+
+void cls::generateTextures()
+{
+    quint32 texCountForGen = 1;
+    glGenTextures(texCountForGen, &texId);
+    glBindTexture(GL_TEXTURE_2D, texId);
+
+    QImage img(":/images/firstTexture.png");
+    bool ok = img.isNull();
+    ok = false;
+
+    DEBUG_NM(img.format());
+//    QImage::Format_RGB32
+//    4
+//    The image is stored using a 32-bit RGB format (0xffRRGGBB).
+
+
+    const GLint mipmapLevel = 0;
+    const GLint borderLegacyStuff = 0;
+    glTexImage2D(GL_TEXTURE_2D, mipmapLevel,
+                 GL_RGB, img.width(), img.height(),
+                 borderLegacyStuff, GL_BGRA, GL_UNSIGNED_BYTE,
+                 img.bits());
+
+    glGenerateMipmap(GL_TEXTURE_2D);
 }
 
 void cls::initializeGL()
@@ -148,6 +208,9 @@ void cls::initializeGL()
     initializeGLFunctions(QGLContext::currentContext());
 
     glClearColor(1.0, 1.0, 1.0, 1.0);
+
+    textureSettings();
+    generateTextures();
 
 //    qint32 nMaxVertexAttribs = 0;
 //    glGetIntegerv(GL_MAX_VERTEX_ATTRIBS, &nMaxVertexAttribs);
@@ -185,6 +248,7 @@ void cls::initializeGL()
 void cls::paintGL()
 {
     programUsual.useProgram();
+    glBindTexture(GL_TEXTURE_2D, texId);
     VAO[0].bind();
 //    glDrawArrays(GL_TRIANGLES, 0, 3);
     glDrawElements(GL_TRIANGLES, 3, GL_UNSIGNED_INT, 0);

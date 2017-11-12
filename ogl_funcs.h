@@ -25,6 +25,8 @@ private:
     void initializeGL();
     void paintGL();
     void resizeGL(int w, int h);
+    void textureSettings();
+    void generateTextures();
 };
 
 #endif // OGL_FUNCS_H

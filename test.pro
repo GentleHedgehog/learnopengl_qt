@@ -42,3 +42,6 @@ LIBS += \
 #message($$rstr)
 
 TARGET = test_#$${rstr}
+
+RESOURCES += \
+    textures.qrc
