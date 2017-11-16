@@ -75,7 +75,7 @@ namespace
             "uniform sampler2D ourTexture;\n\n"
             "void main(){\n"
 //            "fragColor = usualColor;\n"
-            "fragColor = texture(ourTexture, texCoord);\n"
+            "fragColor = texture(ourTexture, texCoord) * usualColor;\n"
             "}"
             );
 
