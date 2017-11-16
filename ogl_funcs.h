@@ -27,6 +27,8 @@ private:
     void resizeGL(int w, int h);
     void textureSettings();
     void generateTextures();
+
+    void keyPressEvent(QKeyEvent *event) override;
 };
 
 #endif // OGL_FUNCS_H

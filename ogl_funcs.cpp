@@ -10,10 +10,10 @@ namespace
 {
     float vertices_first_triangle[] = {
         // vertex               // color            // tex coord
-       -1.0f,  1.0f, 0.0f,      1.0, 0.0, 0.0,      0.0f, 1.0f,// top left
-        1.0f,  1.0f, 0.0f,      1.0, 0.0, 0.0,      1.0f, 1.0f,// top right
+       -1.0f,  1.0f, 0.0f,      1.0, 0.0, 0.0,      0.0f, 2.0f,// top left
+        1.0f,  1.0f, 0.0f,      1.0, 0.0, 0.0,      2.0f, 2.0f,// top right
        -1.0f, -1.0f, 0.0f,      0.0, 1.0, 0.0,      0.0f, 0.0f,// bottom left
-        1.0f, -1.0f, 0.0f,      0.0, 0.0, 1.0,      1.0f, 0.0f,// bottom right
+        1.0f, -1.0f, 0.0f,      0.0, 0.0, 1.0,      2.0f, 0.0f,// bottom right
     };
 
     float vertices_second_triangle[] = {
@@ -74,18 +74,19 @@ namespace
             "in vec4 usualColor;\n"
             "in vec2 texCoord;\n"
             "out vec4 fragColor;\n\n"
+            "uniform float mixValue;\n"
             "uniform sampler2D ourTexture1;\n"
             "uniform sampler2D ourTexture2;\n\n"
             "void main(){\n"
 //            "fragColor = usualColor;\n"
             "vec4 color1 = texture(ourTexture1, texCoord);\n"
 //            "vec4 color1 = vec4(1.0, 1.0, 1.0, 1.0);\n"
-            "vec4 color2 = texture(ourTexture2, texCoord);\n"
+            "vec4 color2 = texture(ourTexture2, vec2(texCoord.x,texCoord.y));\n"
 //            "vec4 color2 = vec4(1.0, 0.0, 0.0, 1.0);\n"
             "fragColor = mix("
             "color1.rgba,"
             "color2.rgba, "
-            "0.2);\n"
+            "mixValue);\n"
             "}"
             );
 
@@ -106,6 +107,7 @@ namespace
     quint32 EBO[2] = {0};
     quint32 VBO[2] = {0};
     quint32 texId[2] = {0};
+    float mixValueFromUser = 0.5;
 }
 
 cls::OGL_funcs(QWidget *parent) :
@@ -196,6 +198,12 @@ void cls::textureSettings()
                     programUsual.shaderProgram->programId(),
                     "ourTexture2"),
                 1);
+
+    glUniform1f(
+                glGetUniformLocation(
+                    programUsual.shaderProgram->programId(),
+                    "mixValue"),
+                mixValueFromUser);
 }
 
 void cls::generateTextures()
@@ -241,6 +249,35 @@ void cls::generateTextures()
                  img2.bits());
     glGenerateMipmap(GL_TEXTURE_2D);
 
+}
+
+#include <QKeyEvent>
+void OGL_funcs::keyPressEvent(QKeyEvent *event)
+{
+    if (event->key() == Qt::Key_Right)
+    {
+        if ((mixValueFromUser + 0.005f) < 1.0f)
+        {
+            mixValueFromUser += 0.005;
+        }
+        else
+        {
+            mixValueFromUser = 1.0f;
+        }
+    }
+    else if (event->key() == Qt::Key_Left)
+    {
+        if ((mixValueFromUser - 0.005f) > 0.0f)
+        {
+            mixValueFromUser -= 0.005;
+        }
+        else
+        {
+            mixValueFromUser = 0.0f;
+        }
+    }
+    DEBUG_NM(mixValueFromUser);
+    updateGL();
 }
 
 void cls::initializeGL()
@@ -293,6 +330,13 @@ void cls::initializeGL()
 void cls::paintGL()
 {
     programUsual.useProgram();
+    DEBUG("repaint");
+
+    glUniform1f(
+                glGetUniformLocation(
+                    programUsual.shaderProgram->programId(),
+                    "mixValue"),
+                mixValueFromUser);
 
     glClear(GL_COLOR_BUFFER_BIT);
 //    glEnable(GL_BLEND);
