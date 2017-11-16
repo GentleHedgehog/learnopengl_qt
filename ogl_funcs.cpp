@@ -10,7 +10,8 @@ namespace
 {
     float vertices_first_triangle[] = {
         // vertex               // color            // tex coord
-        0.0f,  1.0f, 0.0f,      1.0, 0.0, 0.0,      0.5f, 1.0f,// top
+       -1.0f,  1.0f, 0.0f,      1.0, 0.0, 0.0,      0.0f, 1.0f,// top left
+        1.0f,  1.0f, 0.0f,      1.0, 0.0, 0.0,      1.0f, 1.0f,// top right
        -1.0f, -1.0f, 0.0f,      0.0, 1.0, 0.0,      0.0f, 0.0f,// bottom left
         1.0f, -1.0f, 0.0f,      0.0, 0.0, 1.0,      1.0f, 0.0f,// bottom right
     };
@@ -23,6 +24,7 @@ namespace
 
     unsigned int indices_first_triangle[] = {
         0, 1, 2,
+        2, 3, 1,
     };
 
     unsigned int indices_second_triangle[] = {
@@ -72,10 +74,18 @@ namespace
             "in vec4 usualColor;\n"
             "in vec2 texCoord;\n"
             "out vec4 fragColor;\n\n"
-            "uniform sampler2D ourTexture;\n\n"
+            "uniform sampler2D ourTexture1;\n"
+            "uniform sampler2D ourTexture2;\n\n"
             "void main(){\n"
 //            "fragColor = usualColor;\n"
-            "fragColor = texture(ourTexture, texCoord) * usualColor;\n"
+            "vec4 color1 = texture(ourTexture1, texCoord);\n"
+//            "vec4 color1 = vec4(1.0, 1.0, 1.0, 1.0);\n"
+            "vec4 color2 = texture(ourTexture2, texCoord);\n"
+//            "vec4 color2 = vec4(1.0, 0.0, 0.0, 1.0);\n"
+            "fragColor = mix("
+            "color1.rgba,"
+            "color2.rgba, "
+            "0.2);\n"
             "}"
             );
 
@@ -95,7 +105,7 @@ namespace
     QOpenGLVertexArrayObject VAO[2];
     quint32 EBO[2] = {0};
     quint32 VBO[2] = {0};
-    quint32 texId = 0;
+    quint32 texId[2] = {0};
 }
 
 cls::OGL_funcs(QWidget *parent) :
@@ -172,19 +182,39 @@ void cls::textureSettings()
     // the texture via linear interpolation:
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+
+    programUsual.useProgram();
+
+    glUniform1i(
+                glGetUniformLocation(
+                    programUsual.shaderProgram->programId(),
+                    "ourTexture1"),
+                0);
+
+    glUniform1i(
+                glGetUniformLocation(
+                    programUsual.shaderProgram->programId(),
+                    "ourTexture2"),
+                1);
 }
 
 void cls::generateTextures()
 {
-    quint32 texCountForGen = 1;
-    glGenTextures(texCountForGen, &texId);
-    glBindTexture(GL_TEXTURE_2D, texId);
+    quint32 texCountForGen = 2;
+    glGenTextures(texCountForGen, texId);
 
     QImage img(":/images/firstTexture.png");
-    bool ok = img.isNull();
-    ok = false;
+    QImage img2(":/images/secondTex.png");
+    img2 = img2.mirrored();
+//    DEBUG_NM(img.hasAlphaChannel());
+//    DEBUG_NM(img2.hasAlphaChannel());
+//    DEBUG_NM(img.format());  // 4
+//    DEBUG_NM(img2.format()); // 5?
 
-    DEBUG_NM(img.format());
+//    DEBUG_NM(img2.isNull());
+//    DEBUG_NM(img2.size());
+
+//    DEBUG_NM(img.format());
 //    QImage::Format_RGB32
 //    4
 //    The image is stored using a 32-bit RGB format (0xffRRGGBB).
@@ -192,12 +222,25 @@ void cls::generateTextures()
 
     const GLint mipmapLevel = 0;
     const GLint borderLegacyStuff = 0;
+
+    glActiveTexture(GL_TEXTURE0);
+    glBindTexture(GL_TEXTURE_2D, texId[0]);
+
     glTexImage2D(GL_TEXTURE_2D, mipmapLevel,
-                 GL_RGB, img.width(), img.height(),
+                 GL_RGBA, img.width(), img.height(),
                  borderLegacyStuff, GL_BGRA, GL_UNSIGNED_BYTE,
                  img.bits());
-
     glGenerateMipmap(GL_TEXTURE_2D);
+
+    glActiveTexture(GL_TEXTURE1);
+    glBindTexture(GL_TEXTURE_2D, texId[1]);
+
+    glTexImage2D(GL_TEXTURE_2D, mipmapLevel,
+                 GL_RGBA, img2.width(), img2.height(),
+                 borderLegacyStuff, GL_BGRA, GL_UNSIGNED_BYTE,
+                 img2.bits());
+    glGenerateMipmap(GL_TEXTURE_2D);
+
 }
 
 void cls::initializeGL()
@@ -208,9 +251,6 @@ void cls::initializeGL()
     initializeGLFunctions(QGLContext::currentContext());
 
     glClearColor(1.0, 1.0, 1.0, 1.0);
-
-    textureSettings();
-    generateTextures();
 
 //    qint32 nMaxVertexAttribs = 0;
 //    glGetIntegerv(GL_MAX_VERTEX_ATTRIBS, &nMaxVertexAttribs);
@@ -243,15 +283,29 @@ void cls::initializeGL()
 //    createProgramWithShaders(programYellow);
 //    deleteShaders(programYellow);
 
+    textureSettings();
+    generateTextures();
+
+
+
 }
 
 void cls::paintGL()
 {
     programUsual.useProgram();
-    glBindTexture(GL_TEXTURE_2D, texId);
+
+    glClear(GL_COLOR_BUFFER_BIT);
+//    glEnable(GL_BLEND);
+//    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
+    glActiveTexture(GL_TEXTURE0);
+    glBindTexture(GL_TEXTURE_2D, texId[0]);
+    glActiveTexture(GL_TEXTURE1);
+    glBindTexture(GL_TEXTURE_2D, texId[1]);
+
     VAO[0].bind();
 //    glDrawArrays(GL_TRIANGLES, 0, 3);
-    glDrawElements(GL_TRIANGLES, 3, GL_UNSIGNED_INT, 0);
+    glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
     VAO[0].release();
 
 //    glUseProgram(programYellow.shaderProgramId);
