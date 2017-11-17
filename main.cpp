@@ -2,6 +2,7 @@
 
 #include "my_gl_widget.h"
 #include "ogl_funcs.h"
+#include "math_calcs.h"
 
 int main(int argc, char *argv[])
 {
@@ -14,6 +15,8 @@ int main(int argc, char *argv[])
 
     OGL_funcs f;
     f.show();
+
+//    MathCalcs mc;
 
 
     return a.exec();
