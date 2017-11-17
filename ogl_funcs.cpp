@@ -46,6 +46,7 @@ namespace
     const quint32 SHD_STRIDE_A_TEX_COORD = 8 * sizeof(GL_FLOAT);
     const quint32 SHD_OFFSET_A_TEX_COORD = 6 * sizeof(GL_FLOAT);
 
+    const QString SHD_TRANS_MATRIX_NAME = "transMatrix";
 
     QString vertexShaderCode =
             "#version 330 core\n"
@@ -59,9 +60,10 @@ namespace
             QString::number(SHD_LOCATION_A_TEX_COORD)+
             ") in vec2 aTexCoord;\n"
             "out vec2 texCoord;\n"
-            "out vec4 usualColor;\n\n"
+            "out vec4 usualColor;\n"
+            "uniform mat4 "+SHD_TRANS_MATRIX_NAME+";\n"
             "void main(){\n"
-            "gl_Position = vec4(aPos.x, aPos.y, aPos.z, 1.0);\n"
+            "gl_Position = "+SHD_TRANS_MATRIX_NAME+" * vec4(aPos.x, aPos.y, aPos.z, 1.0);\n"
             "usualColor = vec4(aColor, 1.0);\n"
             "texCoord = aTexCoord;\n"
             "}";
@@ -108,6 +110,8 @@ namespace
     quint32 VBO[2] = {0};
     quint32 texId[2] = {0};
     float mixValueFromUser = 0.5;
+
+    QMatrix4x4 transformMatrix;
 }
 
 cls::OGL_funcs(QWidget *parent) :
@@ -187,23 +191,20 @@ void cls::textureSettings()
 
     programUsual.useProgram();
 
-    glUniform1i(
-                glGetUniformLocation(
-                    programUsual.shaderProgram->programId(),
-                    "ourTexture1"),
-                0);
+    qint32 activeTextureIndex = 0;
+    programUsual.setUniformValue("ourTexture1", activeTextureIndex);
+    activeTextureIndex = 1;
+    programUsual.setUniformValue("ourTexture2", activeTextureIndex);
+    programUsual.setUniformValue("mixValue", mixValueFromUser);
 
-    glUniform1i(
-                glGetUniformLocation(
-                    programUsual.shaderProgram->programId(),
-                    "ourTexture2"),
-                1);
 
-    glUniform1f(
-                glGetUniformLocation(
-                    programUsual.shaderProgram->programId(),
-                    "mixValue"),
-                mixValueFromUser);
+    QVector3D vecForRotation(0.0f, 0.0f, 1.0f);
+    QVector3D vecForScale(0.5f, 0.5f, 0.5f);
+    transformMatrix.rotate(90, vecForRotation);
+    transformMatrix.scale(vecForScale);
+    programUsual.setUniformMatrixValue(SHD_TRANS_MATRIX_NAME,
+                                       transformMatrix.constData());
+
 }
 
 void cls::generateTextures()
@@ -284,7 +285,6 @@ void cls::initializeGL()
 {
 //    DEBUG(__PRETTY_FUNCTION__);
 
-
     initializeGLFunctions(QGLContext::currentContext());
 
     glClearColor(1.0, 1.0, 1.0, 1.0);
@@ -312,7 +312,8 @@ void cls::initializeGL()
 //    VAO[1].release();
 
     programUsual.initialize(
-                QGLContext::currentContext());
+                QGLContext::currentContext(),
+                this);
     programUsual.compile();
     programUsual.link();
 
@@ -332,11 +333,7 @@ void cls::paintGL()
     programUsual.useProgram();
     DEBUG("repaint");
 
-    glUniform1f(
-                glGetUniformLocation(
-                    programUsual.shaderProgram->programId(),
-                    "mixValue"),
-                mixValueFromUser);
+    programUsual.setUniformValue("mixValue", mixValueFromUser);
 
     glClear(GL_COLOR_BUFFER_BIT);
 //    glEnable(GL_BLEND);

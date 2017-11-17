@@ -17,12 +17,13 @@ cls::ShaderProgramSet(QString vrtxShaderCode,
     fragmentShaderCode = frgmntShaderCode;
 }
 
-void cls::initialize(const QGLContext *curContext)
+void cls::initialize(const QGLContext *curContext, QGLFunctions *funcs)
 {
     context = curContext;
     shaderProgram = new QGLShaderProgram(context);
     vertexShader = new QGLShader(QGLShader::Vertex);
     fragmentShader = new QGLShader(QGLShader::Fragment);
+    f = funcs;
 }
 
 void cls::compile()
@@ -65,6 +66,41 @@ void cls::useProgram()
 
 void cls::deleteShaders()
 {
+}
+
+void cls::setUniformValue(QString name, qint32 value)
+{
+    RETURN_IS_NOT_INITIALIZE();
+    f->glUniform1i(
+                f->glGetUniformLocation(
+                    shaderProgram->programId(),
+                    name.toUtf8().constData()),
+                value);
+}
+
+void cls::setUniformValue(QString name, float value)
+{
+    RETURN_IS_NOT_INITIALIZE();
+    f->glUniform1f(
+                f->glGetUniformLocation(
+                    shaderProgram->programId(),
+                    name.toUtf8().constData()),
+                value);
+}
+
+void cls::setUniformMatrixValue(QString name,
+                                const float *columnMajorMatrixData)
+{
+    RETURN_IS_NOT_INITIALIZE();
+    GLsizei countMatrices = 1;
+    GLboolean isNeedToTranspose = GL_FALSE;
+    f->glUniformMatrix4fv(
+                f->glGetUniformLocation(
+                    shaderProgram->programId(),
+                    name.toUtf8().constData()),
+                countMatrices,
+                isNeedToTranspose,
+                columnMajorMatrixData);
 }
 
 bool cls::isInitialize()

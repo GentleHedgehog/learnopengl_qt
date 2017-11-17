@@ -4,6 +4,7 @@
 
 #include <QGLShader>
 #include <QGLShaderProgram>
+#include <QGLFunctions>
 
 class ShaderProgramSet{
 
@@ -20,7 +21,8 @@ public:
     ShaderProgramSet(QString vrtxShaderCode,
                    QString frgmntShaderCode);
 
-    void initialize(const QGLContext *curContext);
+    void initialize(const QGLContext *curContext,
+                    QGLFunctions *funcs);
 
     void compile();
 
@@ -30,9 +32,15 @@ public:
 
     void deleteShaders();
 
+    void setUniformValue(QString name, qint32 value);
+    void setUniformValue(QString name, float value);
+    void setUniformMatrixValue(QString name, const float *columnMajorMatrixData);
+
 
 private:
     bool isInitialize();
+
+    QGLFunctions *f;
 };
 
 #endif // SHADER_PROGRAM_SET_H
