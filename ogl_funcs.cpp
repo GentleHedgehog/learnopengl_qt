@@ -335,6 +335,18 @@ void cls::paintGL()
 
     programUsual.setUniformValue("mixValue", mixValueFromUser);
 
+
+    QVector3D vecForTranslation(0.5f, -0.5f, 0.0f);
+    QVector3D vecForRotation(0.0f, 0.0f, 1.0f);
+//    QVector3D vecForScale(0.5f, 0.5f, 0.5f);
+    transformMatrix.setToIdentity();
+    transformMatrix.translate(vecForTranslation);
+    transformMatrix.rotate(QTime::currentTime().msec() % 360, vecForRotation);
+//    transformMatrix.scale(vecForScale);
+    programUsual.setUniformMatrixValue(SHD_TRANS_MATRIX_NAME,
+                                       transformMatrix.constData());
+
+
     glClear(GL_COLOR_BUFFER_BIT);
 //    glEnable(GL_BLEND);
 //    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
