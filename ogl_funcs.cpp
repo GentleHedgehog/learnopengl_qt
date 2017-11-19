@@ -8,13 +8,78 @@ typedef OGL_funcs cls;
 
 namespace
 {
-    float vertices_first_triangle[] = {
+    float vertices_first_cube[] = {
         // vertex               // color            // tex coord
-       -1.0f,  1.0f, 0.0f,      1.0, 0.0, 0.0,      0.0f, 1.0f,// top left
-        1.0f,  1.0f, 0.0f,      1.0, 0.0, 0.0,      1.0f, 1.0f,// top right
-       -1.0f, -1.0f, 0.0f,      0.0, 1.0, 0.0,      0.0f, 0.0f,// bottom left
-        1.0f, -1.0f, 0.0f,      0.0, 0.0, 1.0,      1.0f, 0.0f,// bottom right
+        // front
+       -1.0f,  1.0f, 0.0f,      1.0, 0.0, 0.0,      0.0f, 1.0f,// top left                  0
+        1.0f,  1.0f, 0.0f,      1.0, 0.0, 0.0,      1.0f, 1.0f,// top right                 1
+       -1.0f, -1.0f, 0.0f,      0.0, 1.0, 0.0,      0.0f, 0.0f,// bottom left               2
+        1.0f, -1.0f, 0.0f,      0.0, 0.0, 1.0,      1.0f, 0.0f,// bottom right              3
+
+        // rear
+        -1.0f,  1.0f, -1.0f,      1.0, 0.0, 0.0,      0.0f, 1.0f,// top left rear           4
+         1.0f,  1.0f, -1.0f,      1.0, 0.0, 0.0,      1.0f, 1.0f,// top right rear          5
+        -1.0f, -1.0f, -1.0f,      0.0, 1.0, 0.0,      0.0f, 0.0f,// bottom left rear        6
+         1.0f, -1.0f, -1.0f,      0.0, 0.0, 1.0,      1.0f, 0.0f,// bottom right rear       7
+
+        // left
+        -1.0f, -1.0f, 0.0f,      0.0, 1.0, 0.0,      0.0f, 1.0f,// bottom left              2/8
+        -1.0f, -1.0f, -1.0f,      0.0, 1.0, 0.0,     1.0f, 1.0f,// bottom left rear         6/9
+        -1.0f,  1.0f, 0.0f,      1.0, 0.0, 0.0,      0.0f, 0.0f,// top left                 0/10
+        -1.0f,  1.0f, -1.0f,      1.0, 0.0, 0.0,     1.0f, 0.0f,// top left rear            4/11
+
+        // right
+        1.0f,  1.0f, 0.0f,      1.0, 0.0, 0.0,      0.0f, 1.0f,// top right                 1/12
+        1.0f, -1.0f, 0.0f,      0.0, 0.0, 1.0,      1.0f, 1.0f,// bottom right              3/13
+        1.0f, -1.0f, -1.0f,      0.0, 0.0, 1.0,     0.0f, 0.0f,// bottom right rear        7/14
+        1.0f,  1.0f, -1.0f,      1.0, 0.0, 0.0,     1.0f, 0.0f,// top right rear           5/15
+
+        // top
+        -1.0f,  1.0f, 0.0f,      1.0, 0.0, 0.0,      0.0f, 1.0f,// top left                  0/16
+         1.0f,  1.0f, 0.0f,      1.0, 0.0, 0.0,      1.0f, 1.0f,// top right                 1/17
+         -1.0f,  1.0f, -1.0f,      1.0, 0.0, 0.0,    0.0f, 0.0f,// top left rear           4/18
+          1.0f,  1.0f, -1.0f,      1.0, 0.0, 0.0,    1.0f, 0.0f,// top right rear          5/19
+
+        //bottom
+        -1.0f, -1.0f, 0.0f,      0.0, 1.0, 0.0,      0.0f, 1.0f,// bottom left               2/20
+         1.0f, -1.0f, 0.0f,      0.0, 0.0, 1.0,      1.0f, 1.0f,// bottom right              3/21
+         -1.0f, -1.0f, -1.0f,      0.0, 1.0, 0.0,    0.0f, 0.0f,// bottom left rear        6/22
+          1.0f, -1.0f, -1.0f,      0.0, 0.0, 1.0,    1.0f, 0.0f,// bottom right rear       7/23
     };
+
+    /*
+     *   4____5
+     *  /|   /|
+     * 0_|__1 |
+     * | |  | |
+     * | 6__|_7
+     * |/___|/
+     * 2    3
+     *
+     */
+
+    unsigned int indices_first_cube[] = {
+        0, 1, 2, // front
+        2, 3, 1,
+
+        4, 5, 6, // rear
+        6, 7, 5,
+
+        8, 9, 10, // left
+        10, 9, 11,
+
+        13, 12, 14, // right
+        12, 14, 15,
+
+        16, 19, 18, // top
+        16, 17, 19,
+
+        20, 21, 22, // bottom
+        22, 21, 23,
+
+    };
+
+
 
     float vertices_second_triangle[] = {
         0.5f,  0.5f, 0.0f, // top
@@ -22,14 +87,11 @@ namespace
         0.9f, -0.5f, 0.0f, // bottom right
     };
 
-    unsigned int indices_first_triangle[] = {
-        0, 1, 2,
-        2, 3, 1,
-    };
-
     unsigned int indices_second_triangle[] = {
         0, 1, 2,
     };
+
+
 
     const quint32 SHD_LOCATION_A_POS = 0;
     const quint32 SHD_ELEMENT_COUNT_A_POS = 3;
@@ -147,12 +209,12 @@ void cls::createBufObjectsForVertices(bool isFirstTriangle)
 //        DEBUG_NM(EBO[1]);
 
         glBindBuffer(GL_ARRAY_BUFFER, VBO[0]);
-        glBufferData(GL_ARRAY_BUFFER, sizeof(vertices_first_triangle),
-                     static_cast<void*>(vertices_first_triangle), GL_STATIC_DRAW);
+        glBufferData(GL_ARRAY_BUFFER, sizeof(vertices_first_cube),
+                     static_cast<void*>(vertices_first_cube), GL_STATIC_DRAW);
 
         glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO[0]);
-        glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices_first_triangle),
-                     static_cast<void*>(indices_first_triangle), GL_STATIC_DRAW);
+        glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices_first_cube),
+                     static_cast<void*>(indices_first_cube), GL_STATIC_DRAW);
     }
     else
     {
@@ -235,6 +297,7 @@ void cls::generateTextures()
 
     QImage img(":/images/firstTexture.png");
     QImage img2(":/images/secondTex.png");
+    img = img.mirrored();
     img2 = img2.mirrored();
 //    DEBUG_NM(img.hasAlphaChannel());
 //    DEBUG_NM(img2.hasAlphaChannel());
@@ -319,6 +382,7 @@ void cls::initializeGL()
 //    DEBUG_NM(QGLContext::currentContext()->
 //             format().minorVersion());
 
+
     assert(VAO[0].create());
     VAO[0].bind();
     createBufObjectsForVertices(true);
@@ -356,8 +420,15 @@ void cls::paintGL()
 
     programUsual.setUniformValue("mixValue", mixValueFromUser);
 
+    QVector3D vecForModelRotation(0.5f, 1.0f, 0.0f);
+    modelMatrix.rotate(QTime::currentTime().msec() * 50.0f, vecForModelRotation);
 
-    glClear(GL_COLOR_BUFFER_BIT);
+    programUsual.setUniformMatrixValue(SHD_MODEL_MATRIX_NAME,
+                                       modelMatrix.constData());
+
+    glEnable(GL_DEPTH_TEST);
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
 //    glEnable(GL_BLEND);
 //    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
@@ -368,7 +439,7 @@ void cls::paintGL()
 
     VAO[0].bind();
 //    glDrawArrays(GL_TRIANGLES, 0, 3);
-    glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+    glDrawElements(GL_TRIANGLES, 6*6, GL_UNSIGNED_INT, 0);
     VAO[0].release();
 
 //    glUseProgram(programYellow.shaderProgramId);
