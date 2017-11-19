@@ -11,40 +11,40 @@ namespace
     float vertices_first_cube[] = {
         // vertex               // color            // tex coord
         // front
-       -1.0f,  1.0f, 0.0f,      1.0, 0.0, 0.0,      0.0f, 1.0f,// top left                  0
-        1.0f,  1.0f, 0.0f,      1.0, 0.0, 0.0,      1.0f, 1.0f,// top right                 1
-       -1.0f, -1.0f, 0.0f,      0.0, 1.0, 0.0,      0.0f, 0.0f,// bottom left               2
-        1.0f, -1.0f, 0.0f,      0.0, 0.0, 1.0,      1.0f, 0.0f,// bottom right              3
+       -0.5f,  0.5f,   0.5f,      1.0, 0.0, 0.0,      0.0f, 1.0f,// top left                  0
+        0.5f,  0.5f,   0.5f,      1.0, 0.0, 0.0,      1.0f, 1.0f,// top right                 1
+       -0.5f, -0.5f,   0.5f,      0.0, 1.0, 0.0,      0.0f, 0.0f,// bottom left               2
+        0.5f, -0.5f,   0.5f,      0.0, 0.0, 1.0,      1.0f, 0.0f,// bottom right              3
 
         // rear
-        -1.0f,  1.0f, -1.0f,      1.0, 0.0, 0.0,      0.0f, 1.0f,// top left rear           4
-         1.0f,  1.0f, -1.0f,      1.0, 0.0, 0.0,      1.0f, 1.0f,// top right rear          5
-        -1.0f, -1.0f, -1.0f,      0.0, 1.0, 0.0,      0.0f, 0.0f,// bottom left rear        6
-         1.0f, -1.0f, -1.0f,      0.0, 0.0, 1.0,      1.0f, 0.0f,// bottom right rear       7
+        -0.5f,  0.5f, -0.5f,      1.0, 0.0, 0.0,      0.0f, 1.0f,// top left rear           4
+         0.5f,  0.5f, -0.5f,      1.0, 0.0, 0.0,      1.0f, 1.0f,// top right rear          5
+        -0.5f, -0.5f, -0.5f,      0.0, 1.0, 0.0,      0.0f, 0.0f,// bottom left rear        6
+         0.5f, -0.5f, -0.5f,      0.0, 0.0, 1.0,      1.0f, 0.0f,// bottom right rear       7
 
         // left
-        -1.0f, -1.0f, 0.0f,      0.0, 1.0, 0.0,      0.0f, 1.0f,// bottom left              2/8
-        -1.0f, -1.0f, -1.0f,      0.0, 1.0, 0.0,     1.0f, 1.0f,// bottom left rear         6/9
-        -1.0f,  1.0f, 0.0f,      1.0, 0.0, 0.0,      0.0f, 0.0f,// top left                 0/10
-        -1.0f,  1.0f, -1.0f,      1.0, 0.0, 0.0,     1.0f, 0.0f,// top left rear            4/11
+        -0.5f, -0.5f,  0.5f,      0.0, 1.0, 0.0,      0.0f, 1.0f,// bottom left              2/8
+        -0.5f, -0.5f, -0.5f,      0.0, 1.0, 0.0,     1.0f, 1.0f,// bottom left rear         6/9
+        -0.5f,  0.5f,  0.5f,      1.0, 0.0, 0.0,      0.0f, 0.0f,// top left                 0/10
+        -0.5f,  0.5f, -0.5f,      1.0, 0.0, 0.0,     1.0f, 0.0f,// top left rear            4/11
 
         // right
-        1.0f,  1.0f, 0.0f,      1.0, 0.0, 0.0,      0.0f, 1.0f,// top right                 1/12
-        1.0f, -1.0f, 0.0f,      0.0, 0.0, 1.0,      1.0f, 1.0f,// bottom right              3/13
-        1.0f, -1.0f, -1.0f,      0.0, 0.0, 1.0,     0.0f, 0.0f,// bottom right rear        7/14
-        1.0f,  1.0f, -1.0f,      1.0, 0.0, 0.0,     1.0f, 0.0f,// top right rear           5/15
+        0.5f,  0.5f,   0.5f,      1.0, 0.0, 0.0,      0.0f, 1.0f,// top right                 1/12
+        0.5f, -0.5f,   0.5f,      0.0, 0.0, 1.0,      1.0f, 1.0f,// bottom right              3/13
+        0.5f, -0.5f,  -0.5f,      0.0, 0.0, 1.0,     0.0f, 0.0f,// bottom right rear        7/14
+        0.5f,  0.5f,  -0.5f,      1.0, 0.0, 0.0,     1.0f, 0.0f,// top right rear           5/15
 
         // top
-        -1.0f,  1.0f, 0.0f,      1.0, 0.0, 0.0,      0.0f, 1.0f,// top left                  0/16
-         1.0f,  1.0f, 0.0f,      1.0, 0.0, 0.0,      1.0f, 1.0f,// top right                 1/17
-         -1.0f,  1.0f, -1.0f,      1.0, 0.0, 0.0,    0.0f, 0.0f,// top left rear           4/18
-          1.0f,  1.0f, -1.0f,      1.0, 0.0, 0.0,    1.0f, 0.0f,// top right rear          5/19
+        -0.5f,  0.5f,  0.5f,      1.0, 0.0, 0.0,      0.0f, 1.0f,// top left                  0/16
+         0.5f,  0.5f,  0.5f,      1.0, 0.0, 0.0,      1.0f, 1.0f,// top right                 1/17
+        -0.5f,  0.5f, -0.5f,      1.0, 0.0, 0.0,    0.0f, 0.0f,// top left rear           4/18
+         0.5f,  0.5f, -0.5f,      1.0, 0.0, 0.0,    1.0f, 0.0f,// top right rear          5/19
 
         //bottom
-        -1.0f, -1.0f, 0.0f,      0.0, 1.0, 0.0,      0.0f, 1.0f,// bottom left               2/20
-         1.0f, -1.0f, 0.0f,      0.0, 0.0, 1.0,      1.0f, 1.0f,// bottom right              3/21
-         -1.0f, -1.0f, -1.0f,      0.0, 1.0, 0.0,    0.0f, 0.0f,// bottom left rear        6/22
-          1.0f, -1.0f, -1.0f,      0.0, 0.0, 1.0,    1.0f, 0.0f,// bottom right rear       7/23
+        -0.5f, -0.5f,  0.5f,      0.0, 1.0, 0.0,      0.0f, 1.0f,// bottom left               2/20
+         0.5f, -0.5f,  0.5f,      0.0, 0.0, 1.0,      1.0f, 1.0f,// bottom right              3/21
+        -0.5f, -0.5f, -0.5f,      0.0, 1.0, 0.0,    0.0f, 0.0f,// bottom left rear        6/22
+         0.5f, -0.5f, -0.5f,      0.0, 0.0, 1.0,    1.0f, 0.0f,// bottom right rear       7/23
     };
 
     /*
@@ -185,14 +185,22 @@ namespace
     QMatrix4x4 modelMatrix;
     QMatrix4x4 viewMatrix;
     QMatrix4x4 projectionMatrix;
-    int screenWidth = 200;
-    int screenHeight = 200;
+    int screenWidth = 400;
+    int screenHeight = 400;
+
+    bool isPolygoneModeLine = false;
+    bool isPolygoneModeFill = true;
+    bool isChangePolygoneMode = false;
 }
 
 cls::OGL_funcs(QWidget *parent) :
     QGLWidget(parent)
 {
     resize(screenWidth, screenHeight);
+
+    connect(&timer, SIGNAL(timeout()),
+            this, SLOT(updateGL()) );
+    timer.start(10);
 }
 
 void cls::createBufObjectsForVertices(bool isFirstTriangle)
@@ -275,12 +283,15 @@ void cls::textureSettings()
 
 
 
-    QVector3D vecForModelRotation(1.0f, 0.0f, 0.0f);
-    modelMatrix.rotate(-55.0f, vecForModelRotation);
-    viewMatrix.translate(0.0f, 0.0f, -5.0f);
+//    QVector3D vecForModelRotation(1.0f, 0.0f, 0.0f);
+//    modelMatrix.rotate(-55.0f, vecForModelRotation);
+    viewMatrix.translate(0.0f, 0.0f, -8.0f);
     projectionMatrix.perspective(45.0f,
-                                  screenWidth / screenHeight,
+                                  (screenWidth / screenHeight),
                                   0.1f, 100.0f);
+//    projectionMatrix.ortho(0.0f, screenWidth,
+//                           0.0f, screenHeight,
+//                           0.1f, 100.0f);
 
     programUsual.setUniformMatrixValue(SHD_MODEL_MATRIX_NAME,
                                        modelMatrix.constData());
@@ -361,6 +372,17 @@ void OGL_funcs::keyPressEvent(QKeyEvent *event)
             mixValueFromUser = 0.0f;
         }
     }
+    else if (event->key() == Qt::Key_1)
+    {
+        isChangePolygoneMode = true;
+        isPolygoneModeLine = true;
+    }
+    else if (event->key() == Qt::Key_2)
+    {
+        isChangePolygoneMode = true;
+        isPolygoneModeFill = true;
+    }
+
 //    DEBUG_NM(mixValueFromUser);
     updateGL();
 }
@@ -421,7 +443,9 @@ void cls::paintGL()
     programUsual.setUniformValue("mixValue", mixValueFromUser);
 
     QVector3D vecForModelRotation(0.5f, 1.0f, 0.0f);
-    modelMatrix.rotate(QTime::currentTime().msec() * 50.0f, vecForModelRotation);
+
+    float rotateAngle = 1;//(float)(QTime::currentTime().msec() % 5);
+    modelMatrix.rotate(rotateAngle, vecForModelRotation);
 
     programUsual.setUniformMatrixValue(SHD_MODEL_MATRIX_NAME,
                                        modelMatrix.constData());
@@ -442,6 +466,21 @@ void cls::paintGL()
     glDrawElements(GL_TRIANGLES, 6*6, GL_UNSIGNED_INT, 0);
     VAO[0].release();
 
+    if (isChangePolygoneMode)
+    {
+        if (isPolygoneModeLine)
+        {
+            glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+        }
+        if (isPolygoneModeFill)
+        {
+            glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+        }
+        isChangePolygoneMode = false;
+        isPolygoneModeLine = false;
+        isPolygoneModeFill = false;
+    }
+
 //    glUseProgram(programYellow.shaderProgramId);
 
 //    qint32 currentTimeSec = QTime::currentTime().second();
@@ -461,13 +500,5 @@ void OGL_funcs::resizeGL(int w, int h)
     screenWidth = w;
     screenHeight = h;
     glViewport(0, 0, w, h);
-    if (h > 500)
-    {
-        glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
-    }
-    else
-    {
-        glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
-    }
 }
 

@@ -4,7 +4,7 @@
 #include <QGLWidget>
 #include <QGLFunctions>
 #include "shader_program_set.h"
-
+#include <QTimer>
 
 
 class OGL_funcs :
@@ -17,6 +17,8 @@ public:
 
 
 private:
+    QTimer timer;
+
 
     void createBufObjectsForVertices(bool isFirstTriangle);
     void setAttribFroVertexAPos();
