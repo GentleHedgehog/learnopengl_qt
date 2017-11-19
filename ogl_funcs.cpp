@@ -10,10 +10,10 @@ namespace
 {
     float vertices_first_triangle[] = {
         // vertex               // color            // tex coord
-       -1.0f,  1.0f, 0.0f,      1.0, 0.0, 0.0,      0.0f, 2.0f,// top left
-        1.0f,  1.0f, 0.0f,      1.0, 0.0, 0.0,      2.0f, 2.0f,// top right
+       -1.0f,  1.0f, 0.0f,      1.0, 0.0, 0.0,      0.0f, 1.0f,// top left
+        1.0f,  1.0f, 0.0f,      1.0, 0.0, 0.0,      1.0f, 1.0f,// top right
        -1.0f, -1.0f, 0.0f,      0.0, 1.0, 0.0,      0.0f, 0.0f,// bottom left
-        1.0f, -1.0f, 0.0f,      0.0, 0.0, 1.0,      2.0f, 0.0f,// bottom right
+        1.0f, -1.0f, 0.0f,      0.0, 0.0, 1.0,      1.0f, 0.0f,// bottom right
     };
 
     float vertices_second_triangle[] = {
@@ -46,7 +46,9 @@ namespace
     const quint32 SHD_STRIDE_A_TEX_COORD = 8 * sizeof(GL_FLOAT);
     const quint32 SHD_OFFSET_A_TEX_COORD = 6 * sizeof(GL_FLOAT);
 
-    const QString SHD_TRANS_MATRIX_NAME = "transMatrix";
+    const QString SHD_MODEL_MATRIX_NAME = "modelMatrix";
+    const QString SHD_VIEW_MATRIX_NAME = "viewMatrix";
+    const QString SHD_PROJ_MATRIX_NAME = "projectionMatrix";
 
     QString vertexShaderCode =
             "#version 330 core\n"
@@ -61,9 +63,15 @@ namespace
             ") in vec2 aTexCoord;\n"
             "out vec2 texCoord;\n"
             "out vec4 usualColor;\n"
-            "uniform mat4 "+SHD_TRANS_MATRIX_NAME+";\n"
+            "uniform mat4 "+SHD_MODEL_MATRIX_NAME+";\n"
+            "uniform mat4 "+SHD_VIEW_MATRIX_NAME+";\n"
+            "uniform mat4 "+SHD_PROJ_MATRIX_NAME+";\n"
             "void main(){\n"
-            "gl_Position = "+SHD_TRANS_MATRIX_NAME+" * vec4(aPos.x, aPos.y, aPos.z, 1.0);\n"
+            "gl_Position = " +
+            SHD_PROJ_MATRIX_NAME + "*" +
+            SHD_VIEW_MATRIX_NAME + "*" +
+            SHD_MODEL_MATRIX_NAME +
+            " * vec4(aPos.x, aPos.y, aPos.z, 1.0);\n"
             "usualColor = vec4(aColor, 1.0);\n"
             "texCoord = aTexCoord;\n"
             "}";
@@ -112,12 +120,17 @@ namespace
     float mixValueFromUser = 0.5;
 
     QMatrix4x4 transformMatrix;
+    QMatrix4x4 modelMatrix;
+    QMatrix4x4 viewMatrix;
+    QMatrix4x4 projectionMatrix;
+    int screenWidth = 200;
+    int screenHeight = 200;
 }
 
 cls::OGL_funcs(QWidget *parent) :
     QGLWidget(parent)
 {
-    resize(200, 200);
+    resize(screenWidth, screenHeight);
 }
 
 void cls::createBufObjectsForVertices(bool isFirstTriangle)
@@ -198,13 +211,21 @@ void cls::textureSettings()
     programUsual.setUniformValue("mixValue", mixValueFromUser);
 
 
-    QVector3D vecForRotation(0.0f, 0.0f, 1.0f);
-    QVector3D vecForScale(0.5f, 0.5f, 0.5f);
-    transformMatrix.rotate(90, vecForRotation);
-    transformMatrix.scale(vecForScale);
-    programUsual.setUniformMatrixValue(SHD_TRANS_MATRIX_NAME,
-                                       transformMatrix.constData());
 
+
+    QVector3D vecForModelRotation(1.0f, 0.0f, 0.0f);
+    modelMatrix.rotate(-55.0f, vecForModelRotation);
+    viewMatrix.translate(0.0f, 0.0f, -5.0f);
+    projectionMatrix.perspective(45.0f,
+                                  screenWidth / screenHeight,
+                                  0.1f, 100.0f);
+
+    programUsual.setUniformMatrixValue(SHD_MODEL_MATRIX_NAME,
+                                       modelMatrix.constData());
+    programUsual.setUniformMatrixValue(SHD_VIEW_MATRIX_NAME,
+                                       viewMatrix.constData());
+    programUsual.setUniformMatrixValue(SHD_PROJ_MATRIX_NAME,
+                                       projectionMatrix.constData());
 }
 
 void cls::generateTextures()
@@ -277,7 +298,7 @@ void OGL_funcs::keyPressEvent(QKeyEvent *event)
             mixValueFromUser = 0.0f;
         }
     }
-    DEBUG_NM(mixValueFromUser);
+//    DEBUG_NM(mixValueFromUser);
     updateGL();
 }
 
@@ -331,20 +352,9 @@ void cls::initializeGL()
 void cls::paintGL()
 {
     programUsual.useProgram();
-    DEBUG("repaint");
+//    DEBUG("repaint");
 
     programUsual.setUniformValue("mixValue", mixValueFromUser);
-
-
-    QVector3D vecForTranslation(0.5f, -0.5f, 0.0f);
-    QVector3D vecForRotation(0.0f, 0.0f, 1.0f);
-//    QVector3D vecForScale(0.5f, 0.5f, 0.5f);
-    transformMatrix.setToIdentity();
-    transformMatrix.translate(vecForTranslation);
-    transformMatrix.rotate(QTime::currentTime().msec() % 360, vecForRotation);
-//    transformMatrix.scale(vecForScale);
-    programUsual.setUniformMatrixValue(SHD_TRANS_MATRIX_NAME,
-                                       transformMatrix.constData());
 
 
     glClear(GL_COLOR_BUFFER_BIT);
@@ -377,8 +387,10 @@ void cls::paintGL()
 
 void OGL_funcs::resizeGL(int w, int h)
 {
+    screenWidth = w;
+    screenHeight = h;
     glViewport(0, 0, w, h);
-    if (h > 400)
+    if (h > 500)
     {
         glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
     }

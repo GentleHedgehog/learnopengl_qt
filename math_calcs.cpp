@@ -21,10 +21,12 @@ cls::MathCalcs(QObject *parent) : QObject(parent)
 
     QVector3D vecForRotation(0.0f, 0.0f, 1.0f);
     QVector3D vecForScale(0.5f, 0.5f, 0.5f);
-    trans.rotate(90, vecForRotation);
-    trans.scale(vecForScale);
+//    trans.rotate(90, vecForRotation);
+//    trans.scale(vecForScale);
 
-    vec = trans * vec;
+//    vec = trans * vec;
+
+    trans.ortho(0.0f, 800.0f, 0.0f, 600.0f, 0.1f, 100.0f);
 
     DEBUG_NM(vec);
     DEBUG_NM(trans);
