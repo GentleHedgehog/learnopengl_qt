@@ -17,22 +17,22 @@ namespace
         0.5f, -0.5f,   0.5f,      0.0, 0.0, 1.0,      1.0f, 0.0f,// bottom right              3
 
         // rear
-        -0.5f,  0.5f, -0.5f,      1.0, 0.0, 0.0,      0.0f, 1.0f,// top left rear           4
-         0.5f,  0.5f, -0.5f,      1.0, 0.0, 0.0,      1.0f, 1.0f,// top right rear          5
-        -0.5f, -0.5f, -0.5f,      0.0, 1.0, 0.0,      0.0f, 0.0f,// bottom left rear        6
-         0.5f, -0.5f, -0.5f,      0.0, 0.0, 1.0,      1.0f, 0.0f,// bottom right rear       7
+        -0.5f,  0.5f, -0.5f,      1.0, 0.0, 0.0,      1.0f, 1.0f,// top left rear           4
+         0.5f,  0.5f, -0.5f,      1.0, 0.0, 0.0,      0.0f, 1.0f,// top right rear          5
+        -0.5f, -0.5f, -0.5f,      0.0, 1.0, 0.0,      1.0f, 0.0f,// bottom left rear        6
+         0.5f, -0.5f, -0.5f,      0.0, 0.0, 1.0,      0.0f, 0.0f,// bottom right rear       7
 
         // left
-        -0.5f, -0.5f,  0.5f,      0.0, 1.0, 0.0,      0.0f, 1.0f,// bottom left              2/8
-        -0.5f, -0.5f, -0.5f,      0.0, 1.0, 0.0,     1.0f, 1.0f,// bottom left rear         6/9
-        -0.5f,  0.5f,  0.5f,      1.0, 0.0, 0.0,      0.0f, 0.0f,// top left                 0/10
-        -0.5f,  0.5f, -0.5f,      1.0, 0.0, 0.0,     1.0f, 0.0f,// top left rear            4/11
+        -0.5f, -0.5f,  0.5f,      0.0, 1.0, 0.0,      1.0f, 0.0f,// bottom left              2/8
+        -0.5f, -0.5f, -0.5f,      0.0, 1.0, 0.0,     0.0f, 0.0f,// bottom left rear         6/9
+        -0.5f,  0.5f,  0.5f,      1.0, 0.0, 0.0,      1.0f, 1.0f,// top left                 0/10
+        -0.5f,  0.5f, -0.5f,      1.0, 0.0, 0.0,     0.0f, 1.0f,// top left rear            4/11
 
         // right
         0.5f,  0.5f,   0.5f,      1.0, 0.0, 0.0,      0.0f, 1.0f,// top right                 1/12
-        0.5f, -0.5f,   0.5f,      0.0, 0.0, 1.0,      1.0f, 1.0f,// bottom right              3/13
-        0.5f, -0.5f,  -0.5f,      0.0, 0.0, 1.0,     0.0f, 0.0f,// bottom right rear        7/14
-        0.5f,  0.5f,  -0.5f,      1.0, 0.0, 0.0,     1.0f, 0.0f,// top right rear           5/15
+        0.5f, -0.5f,   0.5f,      0.0, 0.0, 1.0,      0.0f, 0.0f,// bottom right              3/13
+        0.5f, -0.5f,  -0.5f,      0.0, 0.0, 1.0,     1.0f, 0.0f,// bottom right rear        7/14
+        0.5f,  0.5f,  -0.5f,      1.0, 0.0, 0.0,     1.0f, 1.0f,// top right rear           5/15
 
         // top
         -0.5f,  0.5f,  0.5f,      1.0, 0.0, 0.0,      0.0f, 1.0f,// top left                  0/16
@@ -66,16 +66,16 @@ namespace
         6, 7, 5,
 
         8, 9, 10, // left
-        10, 9, 11,
+        10, 11, 9,
 
-        13, 12, 14, // right
-        12, 14, 15,
+        12, 13, 14, // right
+        14, 15, 12,
 
-        16, 19, 18, // top
-        16, 17, 19,
+        16, 17, 18, // top
+        18, 19, 17,
 
         20, 21, 22, // bottom
-        22, 21, 23,
+        22, 23, 21,
 
     };
 
@@ -285,7 +285,7 @@ void cls::textureSettings()
 
 //    QVector3D vecForModelRotation(1.0f, 0.0f, 0.0f);
 //    modelMatrix.rotate(-55.0f, vecForModelRotation);
-    viewMatrix.translate(0.0f, 0.0f, -8.0f);
+    viewMatrix.translate(0.0f, 0.0f, -6.0f);
     projectionMatrix.perspective(45.0f,
                                   (screenWidth / screenHeight),
                                   0.1f, 100.0f);
@@ -445,6 +445,7 @@ void cls::paintGL()
     QVector3D vecForModelRotation(0.5f, 1.0f, 0.0f);
 
     float rotateAngle = 1;//(float)(QTime::currentTime().msec() % 5);
+//    modelMatrix.setToIdentity();
     modelMatrix.rotate(rotateAngle, vecForModelRotation);
 
     programUsual.setUniformMatrixValue(SHD_MODEL_MATRIX_NAME,
