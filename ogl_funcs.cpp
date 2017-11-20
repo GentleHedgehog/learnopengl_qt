@@ -79,6 +79,21 @@ namespace
 
     };
 
+    QVector3D cubesPositions[] = {
+        QVector3D( 0.0f, 0.0f, 0.0f),
+        QVector3D( 2.0f, 5.0f, -15.0f),
+        QVector3D(-1.5f, -2.2f, -2.5f),
+        QVector3D(-3.8f, -2.0f, -12.3f),
+        QVector3D( 2.4f, -0.4f, -3.5f),
+        QVector3D(-1.7f, 3.0f, -7.5f),
+        QVector3D( 1.3f, -2.0f, -2.5f),
+        QVector3D( 1.5f, 2.0f, -2.5f),
+        QVector3D( 1.5f, 0.2f, -1.5f),
+        QVector3D(-1.3f, 1.0f, -1.5f)
+    };
+
+    QMatrix4x4 cubesModelMatrices[10];
+
 
 
     float vertices_second_triangle[] = {
@@ -442,14 +457,6 @@ void cls::paintGL()
 
     programUsual.setUniformValue("mixValue", mixValueFromUser);
 
-    QVector3D vecForModelRotation(0.5f, 1.0f, 0.0f);
-
-    float rotateAngle = 1;//(float)(QTime::currentTime().msec() % 5);
-//    modelMatrix.setToIdentity();
-    modelMatrix.rotate(rotateAngle, vecForModelRotation);
-
-    programUsual.setUniformMatrixValue(SHD_MODEL_MATRIX_NAME,
-                                       modelMatrix.constData());
 
     glEnable(GL_DEPTH_TEST);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -464,7 +471,25 @@ void cls::paintGL()
 
     VAO[0].bind();
 //    glDrawArrays(GL_TRIANGLES, 0, 3);
-    glDrawElements(GL_TRIANGLES, 6*6, GL_UNSIGNED_INT, 0);
+
+    for (int i = 0; i < sizeofArray(cubesPositions); ++i)
+    {
+        QVector3D vecForModelTranslation = cubesPositions[i];
+        QVector3D vecForModelRotation = QVector3D(0.0, 1.0, 0.0f);
+
+        float rotateAngle = 1;//(float)(QTime::currentTime().msec() % 5);
+
+//        cubesModelMatrices[i].setToIdentity();
+        cubesModelMatrices[i].translate(vecForModelTranslation);
+        cubesModelMatrices[i].rotate(rotateAngle, vecForModelRotation);
+
+        programUsual.setUniformMatrixValue(SHD_MODEL_MATRIX_NAME,
+                                           cubesModelMatrices[i].constData());
+        cubesModelMatrices[i].translate(vecForModelTranslation * -1);
+
+        glDrawElements(GL_TRIANGLES, 6*6, GL_UNSIGNED_INT, 0);
+    }
+
     VAO[0].release();
 
     if (isChangePolygoneMode)
