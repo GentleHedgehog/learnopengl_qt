@@ -3,215 +3,31 @@
 #include <QOpenGLVertexArrayObject>
 #include <QImage>
 
+#include "vertex_data.h"
+#include "shader_data.h"
+#include "camera_setter.h"
+#include "texture_holder.h"
 
 typedef OGL_funcs cls;
 
 namespace
 {
-    float vertices_first_cube[] = {
-        // vertex               // color            // tex coord
-        // front
-       -0.5f,  0.5f,   0.5f,      1.0, 0.0, 0.0,      0.0f, 1.0f,// top left                  0
-        0.5f,  0.5f,   0.5f,      1.0, 0.0, 0.0,      1.0f, 1.0f,// top right                 1
-       -0.5f, -0.5f,   0.5f,      0.0, 1.0, 0.0,      0.0f, 0.0f,// bottom left               2
-        0.5f, -0.5f,   0.5f,      0.0, 0.0, 1.0,      1.0f, 0.0f,// bottom right              3
-
-        // rear
-        -0.5f,  0.5f, -0.5f,      1.0, 0.0, 0.0,      1.0f, 1.0f,// top left rear           4
-         0.5f,  0.5f, -0.5f,      1.0, 0.0, 0.0,      0.0f, 1.0f,// top right rear          5
-        -0.5f, -0.5f, -0.5f,      0.0, 1.0, 0.0,      1.0f, 0.0f,// bottom left rear        6
-         0.5f, -0.5f, -0.5f,      0.0, 0.0, 1.0,      0.0f, 0.0f,// bottom right rear       7
-
-        // left
-        -0.5f, -0.5f,  0.5f,      0.0, 1.0, 0.0,      1.0f, 0.0f,// bottom left              2/8
-        -0.5f, -0.5f, -0.5f,      0.0, 1.0, 0.0,     0.0f, 0.0f,// bottom left rear         6/9
-        -0.5f,  0.5f,  0.5f,      1.0, 0.0, 0.0,      1.0f, 1.0f,// top left                 0/10
-        -0.5f,  0.5f, -0.5f,      1.0, 0.0, 0.0,     0.0f, 1.0f,// top left rear            4/11
-
-        // right
-        0.5f,  0.5f,   0.5f,      1.0, 0.0, 0.0,      0.0f, 1.0f,// top right                 1/12
-        0.5f, -0.5f,   0.5f,      0.0, 0.0, 1.0,      0.0f, 0.0f,// bottom right              3/13
-        0.5f, -0.5f,  -0.5f,      0.0, 0.0, 1.0,     1.0f, 0.0f,// bottom right rear        7/14
-        0.5f,  0.5f,  -0.5f,      1.0, 0.0, 0.0,     1.0f, 1.0f,// top right rear           5/15
-
-        // top
-        -0.5f,  0.5f,  0.5f,      1.0, 0.0, 0.0,      0.0f, 1.0f,// top left                  0/16
-         0.5f,  0.5f,  0.5f,      1.0, 0.0, 0.0,      1.0f, 1.0f,// top right                 1/17
-        -0.5f,  0.5f, -0.5f,      1.0, 0.0, 0.0,    0.0f, 0.0f,// top left rear           4/18
-         0.5f,  0.5f, -0.5f,      1.0, 0.0, 0.0,    1.0f, 0.0f,// top right rear          5/19
-
-        //bottom
-        -0.5f, -0.5f,  0.5f,      0.0, 1.0, 0.0,      0.0f, 1.0f,// bottom left               2/20
-         0.5f, -0.5f,  0.5f,      0.0, 0.0, 1.0,      1.0f, 1.0f,// bottom right              3/21
-        -0.5f, -0.5f, -0.5f,      0.0, 1.0, 0.0,    0.0f, 0.0f,// bottom left rear        6/22
-         0.5f, -0.5f, -0.5f,      0.0, 0.0, 1.0,    1.0f, 0.0f,// bottom right rear       7/23
-    };
-
-    /*
-     *   4____5
-     *  /|   /|
-     * 0_|__1 |
-     * | |  | |
-     * | 6__|_7
-     * |/___|/
-     * 2    3
-     *
-     */
-
-    unsigned int indices_first_cube[] = {
-        0, 1, 2, // front
-        2, 3, 1,
-
-        4, 5, 6, // rear
-        6, 7, 5,
-
-        8, 9, 10, // left
-        10, 11, 9,
-
-        12, 13, 14, // right
-        14, 15, 12,
-
-        16, 17, 18, // top
-        18, 19, 17,
-
-        20, 21, 22, // bottom
-        22, 23, 21,
-
-    };
-
-    QVector3D cubesPositions[] = {
-        QVector3D( 0.0f, 0.0f, 0.0f),
-        QVector3D( 2.0f, 5.0f, -15.0f),
-        QVector3D(-1.5f, -2.2f, -2.5f),
-        QVector3D(-3.8f, -2.0f, -12.3f),
-        QVector3D( 2.4f, -0.4f, -3.5f),
-        QVector3D(-1.7f, 3.0f, -7.5f),
-        QVector3D( 1.3f, -2.0f, -2.5f),
-        QVector3D( 1.5f, 2.0f, -2.5f),
-        QVector3D( 1.5f, 0.2f, -1.5f),
-        QVector3D(-1.3f, 1.0f, -1.5f)
-    };
-
-    QMatrix4x4 cubesModelMatrices[10];
-
-
-
-    float vertices_second_triangle[] = {
-        0.5f,  0.5f, 0.0f, // top
-        0.0f, -0.5f, 0.0f, // bottom left
-        0.9f, -0.5f, 0.0f, // bottom right
-    };
-
-    unsigned int indices_second_triangle[] = {
-        0, 1, 2,
-    };
-
-
-
-    const quint32 SHD_LOCATION_A_POS = 0;
-    const quint32 SHD_ELEMENT_COUNT_A_POS = 3;
-    const quint32 SHD_STRIDE_A_POS = 8 * sizeof(GL_FLOAT);
-    const quint32 SHD_OFFSET_A_POS = 0;
-
-    const quint32 SHD_LOCATION_A_COLOR = 1;
-    const quint32 SHD_ELEMENT_COUNT_A_COLOR = 3;
-    const quint32 SHD_STRIDE_A_COLOR = 8 * sizeof(GL_FLOAT);
-    const quint32 SHD_OFFSET_A_COLOR = 3 * sizeof(GL_FLOAT);
-
-    const quint32 SHD_LOCATION_A_TEX_COORD = 2;
-    const quint32 SHD_ELEMENT_COUNT_A_TEX_COORD = 2;
-    const quint32 SHD_STRIDE_A_TEX_COORD = 8 * sizeof(GL_FLOAT);
-    const quint32 SHD_OFFSET_A_TEX_COORD = 6 * sizeof(GL_FLOAT);
-
-    const QString SHD_MODEL_MATRIX_NAME = "modelMatrix";
-    const QString SHD_VIEW_MATRIX_NAME = "viewMatrix";
-    const QString SHD_PROJ_MATRIX_NAME = "projectionMatrix";
-
-    QString vertexShaderCode =
-            "#version 330 core\n"
-            "layout (location = "+
-            QString::number(SHD_LOCATION_A_POS)+
-            ") in vec3 aPos;\n"
-            "layout (location = "+
-            QString::number(SHD_LOCATION_A_COLOR)+
-            ") in vec3 aColor;\n"
-            "layout (location = "+
-            QString::number(SHD_LOCATION_A_TEX_COORD)+
-            ") in vec2 aTexCoord;\n"
-            "out vec2 texCoord;\n"
-            "out vec4 usualColor;\n"
-            "uniform mat4 "+SHD_MODEL_MATRIX_NAME+";\n"
-            "uniform mat4 "+SHD_VIEW_MATRIX_NAME+";\n"
-            "uniform mat4 "+SHD_PROJ_MATRIX_NAME+";\n"
-            "void main(){\n"
-            "gl_Position = " +
-            SHD_PROJ_MATRIX_NAME + "*" +
-            SHD_VIEW_MATRIX_NAME + "*" +
-            SHD_MODEL_MATRIX_NAME +
-            " * vec4(aPos.x, aPos.y, aPos.z, 1.0);\n"
-            "usualColor = vec4(aColor, 1.0);\n"
-            "texCoord = aTexCoord;\n"
-            "}";
-
-    ShaderProgramSet programUsual(
-            vertexShaderCode
-            ,
-
-            "#version 330 core\n"
-            "in vec4 usualColor;\n"
-            "in vec2 texCoord;\n"
-            "out vec4 fragColor;\n\n"
-            "uniform float mixValue;\n"
-            "uniform sampler2D ourTexture1;\n"
-            "uniform sampler2D ourTexture2;\n\n"
-            "void main(){\n"
-//            "fragColor = usualColor;\n"
-            "vec4 color1 = texture(ourTexture1, texCoord);\n"
-//            "vec4 color1 = vec4(1.0, 1.0, 1.0, 1.0);\n"
-            "vec4 color2 = texture(ourTexture2, vec2(texCoord.x,texCoord.y));\n"
-//            "vec4 color2 = vec4(1.0, 0.0, 0.0, 1.0);\n"
-            "fragColor = mix("
-            "color1.rgba,"
-            "color2.rgba, "
-            "mixValue);\n"
-            "}"
-            );
-
-    ShaderProgramSet programYellow(
-            vertexShaderCode
-            ,
-
-            "#version 330 core\n"
-            "uniform vec4 uniformColor;\n"
-            "out vec4 color;\n\n"
-            "void main(){\n"
-            "color = uniformColor;\n"
-            "}"
-            );
-
-
     QOpenGLVertexArrayObject VAO[2];
     quint32 EBO[2] = {0};
     quint32 VBO[2] = {0};
-    quint32 texId[2] = {0};
-    float mixValueFromUser = 0.5;
-
-    QMatrix4x4 transformMatrix;
-    QMatrix4x4 modelMatrix;
-    QMatrix4x4 viewMatrix;
-    QMatrix4x4 projectionMatrix;
-    int screenWidth = 400;
-    int screenHeight = 400;
 
     bool isPolygoneModeLine = false;
     bool isPolygoneModeFill = true;
     bool isChangePolygoneMode = false;
+
+    CameraSetter aCameraSetter;
+    TextureHolder aTextureHolder;
 }
 
 cls::OGL_funcs(QWidget *parent) :
     QGLWidget(parent)
 {
-    resize(screenWidth, screenHeight);
+    resize(aCameraSetter.screenWidth, aCameraSetter.screenHeight);
 
     connect(&timer, SIGNAL(timeout()),
             this, SLOT(updateGL()) );
@@ -276,132 +92,6 @@ void cls::setAttribFroVertexAPos()
     glEnableVertexAttribArray(SHD_LOCATION_A_TEX_COORD);
 }
 
-void cls::textureSettings()
-{
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_MIRRORED_REPEAT);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_MIRRORED_REPEAT);
-//    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-    // linearly interpolates between the
-    // two closest mipmaps and samples
-    // the texture via linear interpolation:
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-
-    programUsual.useProgram();
-
-    qint32 activeTextureIndex = 0;
-    programUsual.setUniformValue("ourTexture1", activeTextureIndex);
-    activeTextureIndex = 1;
-    programUsual.setUniformValue("ourTexture2", activeTextureIndex);
-    programUsual.setUniformValue("mixValue", mixValueFromUser);
-
-
-
-
-//    QVector3D vecForModelRotation(1.0f, 0.0f, 0.0f);
-//    modelMatrix.rotate(-55.0f, vecForModelRotation);
-    viewMatrix.translate(0.0f, 0.0f, -6.0f);
-    projectionMatrix.perspective(45.0f,
-                                  (screenWidth / screenHeight),
-                                  0.1f, 100.0f);
-//    projectionMatrix.ortho(0.0f, screenWidth,
-//                           0.0f, screenHeight,
-//                           0.1f, 100.0f);
-
-    programUsual.setUniformMatrixValue(SHD_MODEL_MATRIX_NAME,
-                                       modelMatrix.constData());
-    programUsual.setUniformMatrixValue(SHD_VIEW_MATRIX_NAME,
-                                       viewMatrix.constData());
-    programUsual.setUniformMatrixValue(SHD_PROJ_MATRIX_NAME,
-                                       projectionMatrix.constData());
-}
-
-void cls::generateTextures()
-{
-    quint32 texCountForGen = 2;
-    glGenTextures(texCountForGen, texId);
-
-    QImage img(":/images/firstTexture.png");
-    QImage img2(":/images/secondTex.png");
-    img = img.mirrored();
-    img2 = img2.mirrored();
-//    DEBUG_NM(img.hasAlphaChannel());
-//    DEBUG_NM(img2.hasAlphaChannel());
-//    DEBUG_NM(img.format());  // 4
-//    DEBUG_NM(img2.format()); // 5?
-
-//    DEBUG_NM(img2.isNull());
-//    DEBUG_NM(img2.size());
-
-//    DEBUG_NM(img.format());
-//    QImage::Format_RGB32
-//    4
-//    The image is stored using a 32-bit RGB format (0xffRRGGBB).
-
-
-    const GLint mipmapLevel = 0;
-    const GLint borderLegacyStuff = 0;
-
-    glActiveTexture(GL_TEXTURE0);
-    glBindTexture(GL_TEXTURE_2D, texId[0]);
-
-    glTexImage2D(GL_TEXTURE_2D, mipmapLevel,
-                 GL_RGBA, img.width(), img.height(),
-                 borderLegacyStuff, GL_BGRA, GL_UNSIGNED_BYTE,
-                 img.bits());
-    glGenerateMipmap(GL_TEXTURE_2D);
-
-    glActiveTexture(GL_TEXTURE1);
-    glBindTexture(GL_TEXTURE_2D, texId[1]);
-
-    glTexImage2D(GL_TEXTURE_2D, mipmapLevel,
-                 GL_RGBA, img2.width(), img2.height(),
-                 borderLegacyStuff, GL_BGRA, GL_UNSIGNED_BYTE,
-                 img2.bits());
-    glGenerateMipmap(GL_TEXTURE_2D);
-
-}
-
-#include <QKeyEvent>
-void OGL_funcs::keyPressEvent(QKeyEvent *event)
-{
-    if (event->key() == Qt::Key_Right)
-    {
-        if ((mixValueFromUser + 0.005f) < 1.0f)
-        {
-            mixValueFromUser += 0.005;
-        }
-        else
-        {
-            mixValueFromUser = 1.0f;
-        }
-    }
-    else if (event->key() == Qt::Key_Left)
-    {
-        if ((mixValueFromUser - 0.005f) > 0.0f)
-        {
-            mixValueFromUser -= 0.005;
-        }
-        else
-        {
-            mixValueFromUser = 0.0f;
-        }
-    }
-    else if (event->key() == Qt::Key_1)
-    {
-        isChangePolygoneMode = true;
-        isPolygoneModeLine = true;
-    }
-    else if (event->key() == Qt::Key_2)
-    {
-        isChangePolygoneMode = true;
-        isPolygoneModeFill = true;
-    }
-
-//    DEBUG_NM(mixValueFromUser);
-    updateGL();
-}
-
 void cls::initializeGL()
 {
 //    DEBUG(__PRETTY_FUNCTION__);
@@ -443,31 +133,27 @@ void cls::initializeGL()
 //    createProgramWithShaders(programYellow);
 //    deleteShaders(programYellow);
 
-    textureSettings();
-    generateTextures();
+    aTextureHolder.initialize(QGLContext::currentContext(),
+                              this, &programUsual);
 
+    aCameraSetter.initialize(QGLContext::currentContext(),
+                              this, &programUsual);
 
 
 }
 
 void cls::paintGL()
 {
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_MIRRORED_REPEAT);
+
     programUsual.useProgram();
+
 //    DEBUG("repaint");
-
-    programUsual.setUniformValue("mixValue", mixValueFromUser);
-
 
     glEnable(GL_DEPTH_TEST);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-//    glEnable(GL_BLEND);
-//    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-
-    glActiveTexture(GL_TEXTURE0);
-    glBindTexture(GL_TEXTURE_2D, texId[0]);
-    glActiveTexture(GL_TEXTURE1);
-    glBindTexture(GL_TEXTURE_2D, texId[1]);
+    aTextureHolder.doPaintWork();
 
     VAO[0].bind();
 //    glDrawArrays(GL_TRIANGLES, 0, 3);
@@ -506,25 +192,38 @@ void cls::paintGL()
         isPolygoneModeLine = false;
         isPolygoneModeFill = false;
     }
-
-//    glUseProgram(programYellow.shaderProgramId);
-
-//    qint32 currentTimeSec = QTime::currentTime().second();
-//    float greenPart = qSin(currentTimeSec) / 2.0f + 0.5f;
-//    GLint uniformVarId = glGetUniformLocation(
-//                programYellow.shaderProgramId, "uniformColor");
-//    glUniform4f(uniformVarId, 0.0f, greenPart, 0.0f, 1.0f);
-
-//    VAO[1].bind();
-////    glDrawArrays(GL_TRIANGLES, 0, 3);
-//    glDrawElements(GL_TRIANGLES, 3, GL_UNSIGNED_INT, 0);
-//    VAO[1].release();
 }
 
 void OGL_funcs::resizeGL(int w, int h)
 {
-    screenWidth = w;
-    screenHeight = h;
+    aCameraSetter.screenWidth = w;
+    aCameraSetter.screenHeight = h;
     glViewport(0, 0, w, h);
+}
+
+
+#include <QKeyEvent>
+void OGL_funcs::keyPressEvent(QKeyEvent *event)
+{
+    if (event->key() == Qt::Key_Right)
+    {
+        aTextureHolder.moreOpacityForFirstTexture();
+    }
+    else if (event->key() == Qt::Key_Left)
+    {
+        aTextureHolder.moreOpacityForSecondTexture();
+    }
+    else if (event->key() == Qt::Key_1)
+    {
+        isChangePolygoneMode = true;
+        isPolygoneModeLine = true;
+    }
+    else if (event->key() == Qt::Key_2)
+    {
+        isChangePolygoneMode = true;
+        isPolygoneModeFill = true;
+    }
+
+    updateGL();
 }
 
