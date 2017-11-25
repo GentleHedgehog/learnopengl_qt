@@ -30,6 +30,7 @@ public:
     void moveCameraBackward();
     void moveCameraRight();
     void moveCameraLeft();
+    void notifyAboutNewFrame();
 signals:
 
 public slots:
@@ -47,9 +48,14 @@ private:
 
     QVector3D cameraFront;
 
-    float cameraSpeed = 0.05;
+    float cameraSpeed = 0.05f;
+    float cameraSpeedBalanced = 0.05f;
 
     QMatrix4x4 lookAtMatrix;
+
+
+    float lastFrameTimeMs = 0.0f;
+    float deltaTimeMs = 0.0f;
 };
 
 #endif // CAMERA_SETTER_H

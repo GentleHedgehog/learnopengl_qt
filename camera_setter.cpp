@@ -1,7 +1,8 @@
 #include "camera_setter.h"
 #include "shader_data.h"
 #include <QtMath>
-
+#include <QTime>
+#include "UsableClass/Macros/macros.h"
 
 typedef CameraSetter cls;
 
@@ -76,12 +77,12 @@ QMatrix4x4 cls::getCurrentViewMatrix()
 
 void cls::moveCameraForward()
 {
-    cameraPosition += cameraFront * cameraSpeed;
+    cameraPosition += cameraFront * cameraSpeedBalanced;
 }
 
 void cls::moveCameraBackward()
 {
-    cameraPosition -= cameraFront * cameraSpeed;
+    cameraPosition -= cameraFront * cameraSpeedBalanced;
 }
 
 void cls::moveCameraRight()
@@ -90,7 +91,7 @@ void cls::moveCameraRight()
             QVector3D::crossProduct(cameraFront,
                                     cameraUp).
             normalized() *
-            cameraSpeed;
+            cameraSpeedBalanced;
 }
 
 void cls::moveCameraLeft()
@@ -99,9 +100,26 @@ void cls::moveCameraLeft()
             QVector3D::crossProduct(cameraFront,
                                     cameraUp).
             normalized() *
-            cameraSpeed;
+            cameraSpeedBalanced;
 }
 
+void cls::notifyAboutNewFrame()
+{
+    float curTime = QTime::currentTime().msecsSinceStartOfDay();
+    deltaTimeMs = curTime - lastFrameTimeMs;
+//    DEBUG_NM(curTime);
+//    DEBUG_NM(deltaTimeMs);
+    if (deltaTimeMs > 100.0f)
+    {
+        deltaTimeMs = 10.0f;
+    }
+    lastFrameTimeMs = curTime;
+
+    if (deltaTimeMs > 0.0f)
+    {
+        cameraSpeedBalanced = cameraSpeed * deltaTimeMs;
+    }
+}
 
 
 

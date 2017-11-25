@@ -31,7 +31,8 @@ cls::OGL_funcs(QWidget *parent) :
 
     connect(&timer, SIGNAL(timeout()),
             this, SLOT(updateGL()) );
-    timer.start(10);
+    timer.setInterval(0);
+    timer.start();
 }
 
 void cls::createBufObjectsForVertices(bool isFirstTriangle)
@@ -154,6 +155,7 @@ void cls::paintGL()
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
     aTextureHolder.doPaintWork();
+    aCameraSetter.notifyAboutNewFrame();
 
     VAO[0].bind();
 //    glDrawArrays(GL_TRIANGLES, 0, 3);
