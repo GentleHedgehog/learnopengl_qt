@@ -176,19 +176,10 @@ void cls::paintGL()
         glDrawElements(GL_TRIANGLES, 6*6, GL_UNSIGNED_INT, 0);
     }
 
-    static int angle = 45;
-    QMatrix4x4 view;
-    int radius = 10.0f;
-    angle++;
-    float x = qSin(qDegreesToRadians((float)(angle % 360))) * radius;
-    float z = qCos(qDegreesToRadians((float)(angle % 360))) * radius;
-    QVector3D eye(x, 0, z);
-    QVector3D center(0, 0, 0);
-    QVector3D up(0, 1, 0);
 
-    view.lookAt(eye, center, up);
-    programUsual.setUniformMatrixValue(SHD_VIEW_MATRIX_NAME,
-                                       view.constData());
+    programUsual.setUniformMatrixValue(
+                SHD_VIEW_MATRIX_NAME,
+                aCameraSetter.getCurrentViewMatrix().constData());
 
     VAO[0].release();
 
@@ -221,11 +212,19 @@ void OGL_funcs::keyPressEvent(QKeyEvent *event)
 {
     if (event->key() == Qt::Key_Right)
     {
-        aTextureHolder.moreOpacityForFirstTexture();
+        aCameraSetter.moveCameraRight();
     }
     else if (event->key() == Qt::Key_Left)
     {
-        aTextureHolder.moreOpacityForSecondTexture();
+        aCameraSetter.moveCameraLeft();
+    }
+    else if (event->key() == Qt::Key_Up)
+    {
+        aCameraSetter.moveCameraForward();
+    }
+    else if (event->key() == Qt::Key_Down)
+    {
+        aCameraSetter.moveCameraBackward();
     }
     else if (event->key() == Qt::Key_1)
     {

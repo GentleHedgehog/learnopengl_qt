@@ -25,6 +25,11 @@ public:
                     QGLFunctions *funcs,
                     ShaderProgramSet *prog);
 
+    QMatrix4x4 getCurrentViewMatrix();
+    void moveCameraForward();
+    void moveCameraBackward();
+    void moveCameraRight();
+    void moveCameraLeft();
 signals:
 
 public slots:
@@ -39,6 +44,10 @@ private:
     QVector3D cameraDirection;
     QVector3D cameraRight;
     QVector3D cameraUp;
+
+    QVector3D cameraFront;
+
+    float cameraSpeed = 0.05;
 
     QMatrix4x4 lookAtMatrix;
 };

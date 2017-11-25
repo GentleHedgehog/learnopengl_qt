@@ -1,5 +1,6 @@
 #include "camera_setter.h"
 #include "shader_data.h"
+#include <QtMath>
 
 
 typedef CameraSetter cls;
@@ -38,18 +39,71 @@ void cls::initialize(const QGLContext *curContext,
                                        projectionMatrix.constData());
 
 
+    cameraPosition = QVector3D(0.0f, 0.0f, 3.0f);
+    cameraFront = QVector3D(0.0f, 0.0f, -1.0f);
+    cameraUp = QVector3D(0.0f, 1.0f, 0.0f);;
 
-    cameraPosition = QVector3D(0.0f, 0.0f, -3.0f);
-    cameraTarget = QVector3D(0.0f, 0.0f, 0.0f);
-    cameraDirection = (cameraPosition - cameraTarget).normalized();
+//    cameraPosition = QVector3D(0.0f, 0.0f, -3.0f);
+//    cameraTarget = QVector3D(0.0f, 0.0f, 0.0f);
+//    cameraDirection = (cameraPosition - cameraTarget).normalized();
 
-    QVector3D worldUpVector(0.0f, 1.0f, 0.0f);
-    cameraRight = QVector3D::crossProduct(worldUpVector,
-                                       cameraDirection).normalized();
+//    QVector3D worldUpVector(0.0f, 1.0f, 0.0f);
+//    cameraRight = QVector3D::crossProduct(worldUpVector,
+//                                       cameraDirection).normalized();
 
-    cameraUp = QVector3D::crossProduct(cameraDirection,
-                                       cameraRight);
+//    cameraUp = QVector3D::crossProduct(cameraDirection,
+//                                       cameraRight);
 
-    lookAtMatrix.lookAt(cameraPosition, cameraTarget, cameraUp);
+//    lookAtMatrix.lookAt(cameraPosition, cameraTarget, cameraUp);
 }
+
+QMatrix4x4 cls::getCurrentViewMatrix()
+{
+//    static int angle = 0;
+    QMatrix4x4 view;
+//    int radius = 10.0f;
+//    angle++;
+//    float x = qSin(qDegreesToRadians((float)(angle % 360))) * radius;
+//    float z = qCos(qDegreesToRadians((float)(angle % 360))) * radius;
+
+    QVector3D eye = cameraPosition;
+    QVector3D center/*(0.0f, 0.0f, 0.0f);*/ = cameraPosition + cameraFront;
+    QVector3D up = cameraUp;
+    view.lookAt(eye, center, up);
+
+    return view;
+}
+
+void cls::moveCameraForward()
+{
+    cameraPosition += cameraFront * cameraSpeed;
+}
+
+void cls::moveCameraBackward()
+{
+    cameraPosition -= cameraFront * cameraSpeed;
+}
+
+void cls::moveCameraRight()
+{
+    cameraPosition +=
+            QVector3D::crossProduct(cameraFront,
+                                    cameraUp).
+            normalized() *
+            cameraSpeed;
+}
+
+void cls::moveCameraLeft()
+{
+    cameraPosition -=
+            QVector3D::crossProduct(cameraFront,
+                                    cameraUp).
+            normalized() *
+            cameraSpeed;
+}
+
+
+
+
+
 
