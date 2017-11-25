@@ -22,7 +22,7 @@ void cls::initialize(const QGLContext *curContext,
     programSet->useProgram();
 //    QVector3D vecForModelRotation(1.0f, 0.0f, 0.0f);
 //    modelMatrix.rotate(-55.0f, vecForModelRotation);
-    viewMatrix.translate(0.0f, 0.0f, -6.0f);
+    viewMatrix.translate(0.0f, 0.0f, 0.0f);
     projectionMatrix.perspective(45.0f,
                                   (screenWidth / screenHeight),
                                   0.1f, 100.0f);
@@ -36,5 +36,20 @@ void cls::initialize(const QGLContext *curContext,
                                        viewMatrix.constData());
     programSet->setUniformMatrixValue(SHD_PROJ_MATRIX_NAME,
                                        projectionMatrix.constData());
+
+
+
+    cameraPosition = QVector3D(0.0f, 0.0f, -3.0f);
+    cameraTarget = QVector3D(0.0f, 0.0f, 0.0f);
+    cameraDirection = (cameraPosition - cameraTarget).normalized();
+
+    QVector3D worldUpVector(0.0f, 1.0f, 0.0f);
+    cameraRight = QVector3D::crossProduct(worldUpVector,
+                                       cameraDirection).normalized();
+
+    cameraUp = QVector3D::crossProduct(cameraDirection,
+                                       cameraRight);
+
+    lookAtMatrix.lookAt(cameraPosition, cameraTarget, cameraUp);
 }
 

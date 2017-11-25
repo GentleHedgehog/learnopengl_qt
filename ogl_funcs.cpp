@@ -158,12 +158,12 @@ void cls::paintGL()
     VAO[0].bind();
 //    glDrawArrays(GL_TRIANGLES, 0, 3);
 
-    for (int i = 0; i < sizeofArray(cubesPositions); ++i)
+    for (int i = 0; i < 1/*sizeofArray(cubesPositions)*/; ++i)
     {
         QVector3D vecForModelTranslation = cubesPositions[i];
         QVector3D vecForModelRotation = QVector3D(0.0, 1.0, 0.0f);
 
-        float rotateAngle = 1;//(float)(QTime::currentTime().msec() % 5);
+        float rotateAngle = 0;//(float)(QTime::currentTime().msec() % 5);
 
 //        cubesModelMatrices[i].setToIdentity();
         cubesModelMatrices[i].translate(vecForModelTranslation);
@@ -175,6 +175,20 @@ void cls::paintGL()
 
         glDrawElements(GL_TRIANGLES, 6*6, GL_UNSIGNED_INT, 0);
     }
+
+    static int angle = 45;
+    QMatrix4x4 view;
+    int radius = 10.0f;
+    angle++;
+    float x = qSin(qDegreesToRadians((float)(angle % 360))) * radius;
+    float z = qCos(qDegreesToRadians((float)(angle % 360))) * radius;
+    QVector3D eye(x, 0, z);
+    QVector3D center(0, 0, 0);
+    QVector3D up(0, 1, 0);
+
+    view.lookAt(eye, center, up);
+    programUsual.setUniformMatrixValue(SHD_VIEW_MATRIX_NAME,
+                                       view.constData());
 
     VAO[0].release();
 

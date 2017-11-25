@@ -33,6 +33,14 @@ private:
     const QGLContext *context = 0;
     QGLFunctions *f;
     ShaderProgramSet *programSet;
+
+    QVector3D cameraPosition;
+    QVector3D cameraTarget;
+    QVector3D cameraDirection;
+    QVector3D cameraRight;
+    QVector3D cameraUp;
+
+    QMatrix4x4 lookAtMatrix;
 };
 
 #endif // CAMERA_SETTER_H
