@@ -122,6 +122,20 @@ void cls::notifyAboutNewFrame()
 }
 
 
+void cls::calcNewDirection(float pitchDeg, float yawDeg)
+{
+    cameraDirection.setX(
+                qCos(qDegreesToRadians(pitch)) *
+                qCos(qDegreesToRadians(yaw)));
+
+    cameraDirection.setY(
+                qSin(qDegreesToRadians(pitch)));
+
+    cameraDirection.setZ(
+                qCos(qDegreesToRadians(pitch)) *
+                qSin(qDegreesToRadians(yaw)));
+}
+
 
 
 

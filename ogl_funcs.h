@@ -30,6 +30,7 @@ private:
     void generateTextures();
 
     void keyPressEvent(QKeyEvent *event) override;
+    void mouseMoveEvent(QMouseEvent *event) override;
 };
 
 #endif // OGL_FUNCS_H

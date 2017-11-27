@@ -27,6 +27,9 @@ namespace
 cls::OGL_funcs(QWidget *parent) :
     QGLWidget(parent)
 {
+    grabKeyboard();
+    grabMouse();
+
     resize(aCameraSetter.screenWidth, aCameraSetter.screenHeight);
 
     connect(&timer, SIGNAL(timeout()),
@@ -241,4 +244,15 @@ void OGL_funcs::keyPressEvent(QKeyEvent *event)
 
     updateGL();
 }
+
+#include <QMouseEvent>
+void OGL_funcs::mouseMoveEvent(QMouseEvent *event)
+{
+    event->pos().x()
+}
+
+//void OGL_funcs::mouse(QKeyEvent *event)
+//{
+
+//}
 
