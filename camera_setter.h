@@ -12,20 +12,23 @@ class CameraSetter : public QObject
 public:
     explicit CameraSetter(QObject *parent = 0);
 
+    QVector3D cameraFront;
+    float fov = 45.0f;
 
     QMatrix4x4 transformMatrix;
     QMatrix4x4 modelMatrix;
     QMatrix4x4 viewMatrix;
     QMatrix4x4 projectionMatrix;
 
-    int screenWidth = 400;
-    int screenHeight = 400;
+    int screenWidth = 800;
+    int screenHeight = 600;
 
     void initialize(const QGLContext *curContext,
                     QGLFunctions *funcs,
                     ShaderProgramSet *prog);
 
     QMatrix4x4 getCurrentViewMatrix();
+    QMatrix4x4 getCurrentProjMatrix();
     void moveCameraForward();
     void moveCameraBackward();
     void moveCameraRight();
@@ -46,7 +49,6 @@ private:
     QVector3D cameraRight;
     QVector3D cameraUp;
 
-    QVector3D cameraFront;
 
     float cameraSpeed = 0.05f;
     float cameraSpeedBalanced = 0.05f;

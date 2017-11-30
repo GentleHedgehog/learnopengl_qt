@@ -22,13 +22,17 @@ namespace
 
     CameraSetter aCameraSetter;
     TextureHolder aTextureHolder;
+
+    float lastMouseX = 400, lastMouseY = 300;
+    float pitch = 0, yaw = 0;
 }
 
 cls::OGL_funcs(QWidget *parent) :
     QGLWidget(parent)
 {
+    setMouseTracking(true);
     grabKeyboard();
-    grabMouse();
+
 
     resize(aCameraSetter.screenWidth, aCameraSetter.screenHeight);
 
@@ -163,7 +167,7 @@ void cls::paintGL()
     VAO[0].bind();
 //    glDrawArrays(GL_TRIANGLES, 0, 3);
 
-    for (int i = 0; i < 1/*sizeofArray(cubesPositions)*/; ++i)
+    for (int i = 0; i < (int)sizeofArray(cubesPositions); ++i)
     {
         QVector3D vecForModelTranslation = cubesPositions[i];
         QVector3D vecForModelRotation = QVector3D(0.0, 1.0, 0.0f);
@@ -181,6 +185,9 @@ void cls::paintGL()
         glDrawElements(GL_TRIANGLES, 6*6, GL_UNSIGNED_INT, 0);
     }
 
+    programUsual.setUniformMatrixValue(
+                SHD_PROJ_MATRIX_NAME,
+                aCameraSetter.getCurrentProjMatrix().constData());
 
     programUsual.setUniformMatrixValue(
                 SHD_VIEW_MATRIX_NAME,
@@ -248,7 +255,80 @@ void OGL_funcs::keyPressEvent(QKeyEvent *event)
 #include <QMouseEvent>
 void OGL_funcs::mouseMoveEvent(QMouseEvent *event)
 {
-    event->pos().x()
+//    return;
+    float xpos = event->pos().x();
+    float ypos = event->pos().y();
+
+    static bool firstMouse = true;
+    if (firstMouse) // this bool variable is initially set to true
+    {
+//        lastMouseX = xpos;
+//        lastMouseY = ypos;
+        firstMouse = false;
+    }
+
+
+    float xoffset = xpos - lastMouseX;
+    float yoffset = lastMouseY - ypos; // positive offset from bottom to top
+
+    lastMouseX = xpos;
+    lastMouseY = ypos;
+
+    float sensitivity = 0.1f;
+    xoffset *= sensitivity;
+    yoffset *= sensitivity;
+
+    pitch += yoffset;
+    yaw += xoffset;
+
+    if(pitch > 89.0f)
+        pitch = 89.0f;
+    if(pitch < -89.0f)
+        pitch = -89.0f;
+//    if(yaw > 89.0f)
+//        yaw = 89.0f;
+//    if(yaw < -89.0f)
+//        yaw = -89.0f;
+
+
+    float x = qCos(qDegreesToRadians(pitch)) * qSin(qDegreesToRadians(yaw));
+    float y = qSin(qDegreesToRadians(pitch));
+    float z = qCos(qDegreesToRadians(pitch)) * (-1 * qCos(qDegreesToRadians(yaw)));
+    QVector3D front;
+    front.setX(x);
+    front.setY(y);
+    front.setZ(z);
+    front.normalize();
+    aCameraSetter.cameraFront = front.normalized();
+
+//    DEBUG_NM(aCameraSetter.cameraFront);
+//    DEBUG_NM(pitch);
+//    DEBUG_NM(yaw);
+}
+
+void OGL_funcs::wheelEvent(QWheelEvent *event)
+{
+    float yoffset = event->angleDelta().y();
+
+
+    if(aCameraSetter.fov >= 1.0f && aCameraSetter.fov <= 45.0f)
+    {
+        if (yoffset > 0)
+        {
+            aCameraSetter.fov += 2;
+        }
+        else
+        {
+            aCameraSetter.fov -= 2;
+        }
+    }
+    if(aCameraSetter.fov <= 1.0f)
+        aCameraSetter.fov = 1.0f;
+    if(aCameraSetter.fov >= 45.0f)
+        aCameraSetter.fov = 45.0f;
+
+    DEBUG_NM(yoffset);
+    DEBUG_NM(aCameraSetter.fov);
 }
 
 //void OGL_funcs::mouse(QKeyEvent *event)

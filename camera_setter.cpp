@@ -25,7 +25,7 @@ void cls::initialize(const QGLContext *curContext,
 //    QVector3D vecForModelRotation(1.0f, 0.0f, 0.0f);
 //    modelMatrix.rotate(-55.0f, vecForModelRotation);
     viewMatrix.translate(0.0f, 0.0f, 0.0f);
-    projectionMatrix.perspective(45.0f,
+    projectionMatrix.perspective(fov,
                                   (screenWidth / screenHeight),
                                   0.1f, 100.0f);
 //    projectionMatrix.ortho(0.0f, screenWidth,
@@ -56,6 +56,17 @@ void cls::initialize(const QGLContext *curContext,
 //                                       cameraRight);
 
 //    lookAtMatrix.lookAt(cameraPosition, cameraTarget, cameraUp);
+}
+
+QMatrix4x4 cls::getCurrentProjMatrix()
+{
+    projectionMatrix.setToIdentity();
+    projectionMatrix.perspective(fov,
+                                  (screenWidth / screenHeight),
+                                  0.1f, 100.0f);
+
+    return projectionMatrix;
+
 }
 
 QMatrix4x4 cls::getCurrentViewMatrix()
@@ -122,19 +133,19 @@ void cls::notifyAboutNewFrame()
 }
 
 
-void cls::calcNewDirection(float pitchDeg, float yawDeg)
-{
-    cameraDirection.setX(
-                qCos(qDegreesToRadians(pitch)) *
-                qCos(qDegreesToRadians(yaw)));
+//void cls::calcNewDirection(float pitchDeg, float yawDeg)
+//{
+//    cameraDirection.setX(
+//                qCos(qDegreesToRadians(pitch)) *
+//                qCos(qDegreesToRadians(yaw)));
 
-    cameraDirection.setY(
-                qSin(qDegreesToRadians(pitch)));
+//    cameraDirection.setY(
+//                qSin(qDegreesToRadians(pitch)));
 
-    cameraDirection.setZ(
-                qCos(qDegreesToRadians(pitch)) *
-                qSin(qDegreesToRadians(yaw)));
-}
+//    cameraDirection.setZ(
+//                qCos(qDegreesToRadians(pitch)) *
+//                qSin(qDegreesToRadians(yaw)));
+//}
 
 
 
