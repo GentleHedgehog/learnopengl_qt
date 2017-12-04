@@ -27,6 +27,8 @@ namespace
 
     float lastMouseX = 400, lastMouseY = 300;
     float pitch = 0, yaw = 0;
+
+    bool isInitializeGl = false;
 }
 
 cls::OGL_funcs(QWidget *parent) :
@@ -42,6 +44,11 @@ cls::OGL_funcs(QWidget *parent) :
             this, SLOT(updateGL()) );
     timer.setInterval(0);
     timer.start();
+
+    connect(&timerForFrameBuffer, SIGNAL(timeout()),
+            this, SLOT(doRenderWorkAnywhere()) );
+    timerForFrameBuffer.setInterval(2000);
+    timerForFrameBuffer.start();
 }
 
 void cls::createBufObjectsForVertices(bool isFirstTriangle)
@@ -104,6 +111,10 @@ void cls::setAttribFroVertexAPos()
 
 void cls::initializeGL()
 {
+    if (isInitializeGl)
+        return;
+    isInitializeGl = true;
+
 //    DEBUG(__PRETTY_FUNCTION__);
 
     initializeGLFunctions(QGLContext::currentContext());
@@ -215,6 +226,36 @@ void cls::paintGL()
         isPolygoneModeLine = false;
         isPolygoneModeFill = false;
     }
+
+    static bool isShowFramebuffer = true;
+
+    if (true/*isShowFramebuffer*/)
+    {
+        isShowFramebuffer = false;
+        aFramebuffer.getImage();
+    }
+}
+
+void cls::doRenderWorkAnywhere()
+{
+    makeCurrent();
+    assert (this->isValid());
+
+    static bool isInit = false;
+
+    if (! isInit)
+    {
+        isInit = true;
+        DEBUG("init anywhere");
+        initializeGL();
+
+        resizeGL(800, 600);
+    }
+
+
+    paintGL();
+
+//    doneCurrent();
 }
 
 void OGL_funcs::resizeGL(int w, int h)
@@ -310,9 +351,9 @@ void OGL_funcs::mouseMoveEvent(QMouseEvent *event)
     // cameraFront: vector -> where camera looks at
     aCameraSetter.cameraFront = front.normalized();
 
-//    DEBUG_NM(aCameraSetter.cameraFront);
-//    DEBUG_NM(pitch);
-//    DEBUG_NM(yaw);
+    DEBUG_NM(aCameraSetter.cameraFront);
+    DEBUG_NM(pitch);
+    DEBUG_NM(yaw);
 }
 
 void OGL_funcs::wheelEvent(QWheelEvent *event)

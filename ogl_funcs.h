@@ -14,9 +14,12 @@ class OGL_funcs :
 public:
     OGL_funcs(QWidget *parent = 0);
 
+public slots:
+    void doRenderWorkAnywhere();
 
 private:
     QTimer timer;
+    QTimer timerForFrameBuffer;
 
 
     void createBufObjectsForVertices(bool isFirstTriangle);

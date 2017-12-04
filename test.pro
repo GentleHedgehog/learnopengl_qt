@@ -3,8 +3,10 @@ QT += opengl
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
+CONFIG += console
 CONFIG += c++11
 CONFIG   -= debug_and_release debug_and_release_target
+
 
 #CONFIG += console
 #CONFIG -= app_bundle
