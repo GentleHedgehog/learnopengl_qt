@@ -299,6 +299,8 @@ void OGL_funcs::mouseMoveEvent(QMouseEvent *event)
     front.setY(y);
     front.setZ(z);
     front.normalize();
+
+    // cameraFront: vector -> where camera looks at
     aCameraSetter.cameraFront = front.normalized();
 
 //    DEBUG_NM(aCameraSetter.cameraFront);

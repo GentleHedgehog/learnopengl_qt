@@ -19,7 +19,9 @@ SOURCES += main.cpp \
     math_calcs.cpp \
     texture_holder.cpp \
     camera_setter.cpp \
-    shader_data.cpp
+    shader_data.cpp \
+    framebuffer.cpp \
+    access_to_qt_opengl.cpp
 
 #INCLUDEPATH += \
 #            "C:\Program Files (x86)\Microsoft SDKs\Windows\v7.0A\Include\gl"
@@ -37,7 +39,9 @@ HEADERS += \
     vertex_data.h \
     shader_data.h \
     texture_holder.h \
-    camera_setter.h
+    camera_setter.h \
+    framebuffer.h \
+    access_to_qt_opengl.h
 
 #LIBS += \
 #    -LC:\Qt\Qt5.7.0\5.7\mingw53_32\lib\libQt5OpenGL.a -lopengl32

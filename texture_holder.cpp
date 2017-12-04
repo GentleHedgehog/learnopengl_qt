@@ -10,7 +10,7 @@ quint32 texId[2] = {0};
 }
 
 
-cls::TextureHolder(QObject *parent) : QObject(parent)
+cls::TextureHolder(QObject *parent) : AccessToQtOpenGl(parent)
 {
 
 }
@@ -19,9 +19,7 @@ void cls::initialize(const QGLContext *curContext,
                      QGLFunctions *funcs,
                      ShaderProgramSet *prog)
 {
-    context = curContext;
-    f = funcs;
-    programSet = prog;
+    AccessToQtOpenGl::initialize(curContext, funcs, prog);
 
     textureSettings();
     generateTextures();

@@ -1,12 +1,11 @@
 #ifndef CAMERA_SETTER_H
 #define CAMERA_SETTER_H
 
-#include <QObject>
 #include <QVector3D>
 #include <QMatrix4x4>
-#include "shader_program_set.h"
+#include "access_to_qt_opengl.h"
 
-class CameraSetter : public QObject
+class CameraSetter : public AccessToQtOpenGl
 {
     Q_OBJECT
 public:
@@ -23,10 +22,6 @@ public:
     int screenWidth = 800;
     int screenHeight = 600;
 
-    void initialize(const QGLContext *curContext,
-                    QGLFunctions *funcs,
-                    ShaderProgramSet *prog);
-
     QMatrix4x4 getCurrentViewMatrix();
     QMatrix4x4 getCurrentProjMatrix();
     void moveCameraForward();
@@ -34,15 +29,14 @@ public:
     void moveCameraRight();
     void moveCameraLeft();
     void notifyAboutNewFrame();
+
+    void initialize(const QGLContext *curContext, QGLFunctions *funcs, ShaderProgramSet *prog) override;
+
 signals:
 
 public slots:
 
 private:
-    const QGLContext *context = 0;
-    QGLFunctions *f;
-    ShaderProgramSet *programSet;
-
     QVector3D cameraPosition;
     QVector3D cameraTarget;
     QVector3D cameraDirection;

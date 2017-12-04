@@ -6,7 +6,7 @@
 
 typedef CameraSetter cls;
 
-cls::CameraSetter(QObject *parent) : QObject(parent)
+cls::CameraSetter(QObject *parent) : AccessToQtOpenGl(parent)
 {
 
 }
@@ -15,10 +15,7 @@ void cls::initialize(const QGLContext *curContext,
                      QGLFunctions *funcs,
                      ShaderProgramSet *prog)
 {
-    context = curContext;
-    f = funcs;
-    programSet = prog;
-
+    AccessToQtOpenGl::initialize(curContext, funcs, prog);
 
 
     programSet->useProgram();

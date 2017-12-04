@@ -2,9 +2,9 @@
 #define TEXTURE_HOLDER_H
 
 #include <QObject>
-#include "shader_program_set.h"
+#include "access_to_qt_opengl.h"
 
-class TextureHolder : public QObject
+class TextureHolder : public AccessToQtOpenGl
 {
     Q_OBJECT
 public:
@@ -13,7 +13,7 @@ public:
 
     void initialize(const QGLContext *curContext,
                     QGLFunctions *funcs,
-                    ShaderProgramSet *prog);
+                    ShaderProgramSet *prog) override;
 
     void doPaintWork();
 
@@ -25,10 +25,6 @@ signals:
 public slots:
 private:
     float mixValueFromUser = 0.5;
-
-    const QGLContext *context = 0;
-    QGLFunctions *f;
-    ShaderProgramSet *programSet;
 
     void textureSettings();
     void generateTextures();
