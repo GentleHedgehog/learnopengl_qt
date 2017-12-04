@@ -7,6 +7,7 @@
 #include "shader_data.h"
 #include "camera_setter.h"
 #include "texture_holder.h"
+#include "framebuffer.h"
 
 typedef OGL_funcs cls;
 
@@ -22,6 +23,7 @@ namespace
 
     CameraSetter aCameraSetter;
     TextureHolder aTextureHolder;
+    Framebuffer aFramebuffer;
 
     float lastMouseX = 400, lastMouseY = 300;
     float pitch = 0, yaw = 0;
@@ -147,6 +149,10 @@ void cls::initializeGL()
     aCameraSetter.initialize(QGLContext::currentContext(),
                               this, &programUsual);
 
+    aFramebuffer.initialize(QGLContext::currentContext(),
+                            this, &programUsual);
+
+    aFramebuffer.create();
 
 }
 
@@ -167,7 +173,7 @@ void cls::paintGL()
     VAO[0].bind();
 //    glDrawArrays(GL_TRIANGLES, 0, 3);
 
-    for (int i = 0; i < (int)sizeofArray(cubesPositions); ++i)
+    for (size_t i = 0; i < sizeofArray(cubesPositions); ++i)
     {
         QVector3D vecForModelTranslation = cubesPositions[i];
         QVector3D vecForModelRotation = QVector3D(0.0, 1.0, 0.0f);
@@ -224,6 +230,7 @@ void OGL_funcs::keyPressEvent(QKeyEvent *event)
 {
     if (event->key() == Qt::Key_Right)
     {
+        aFramebuffer.getImage();
         aCameraSetter.moveCameraRight();
     }
     else if (event->key() == Qt::Key_Left)
@@ -249,7 +256,7 @@ void OGL_funcs::keyPressEvent(QKeyEvent *event)
         isPolygoneModeFill = true;
     }
 
-    updateGL();
+//    updateGL();
 }
 
 #include <QMouseEvent>

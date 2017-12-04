@@ -8,6 +8,11 @@ class Framebuffer : public AccessToQtOpenGl
 {
 public:
     Framebuffer();
+    void create();
+    bool isComplete();
+    void getImage();
+private:
+    void createAttachments();
 };
 
 #endif // FRAMEBUFFER_H
