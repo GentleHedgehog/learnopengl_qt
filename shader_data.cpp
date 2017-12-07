@@ -20,7 +20,7 @@ QString vertexShaderCode =
         ") in vec3 " + aNormal.name + ";\n"
 
         "out vec3 Normal;\n"
-        "out vec3 FragPosInWorld;\n"
+        "out vec3 FragPos;\n"
 
         "uniform mat4 "+aMatrixHelper.model+";\n"
         "uniform mat4 "+aMatrixHelper.view+";\n"
@@ -33,15 +33,15 @@ QString vertexShaderCode =
         aMatrixHelper.model +
         " * vec4(" + aPos.name + ", 1.0);\n"
 
-        "FragPosInWorld = vec3(" +
+        "FragPos = vec3(" +
+        aMatrixHelper.view + "*" +
         aMatrixHelper.model +
         " * vec4(" + aPos.name + ", 1.0));\n"
 
         // calc with Normal matrix to consider changes in the model matrix for normals
         // (not efficient - calc on the CPU side):
-//        "Normal = mat3(transpose(inverse(model))) * aNormal;\n"
-
-        "Normal = aNormal;\n"
+        "Normal = mat3(transpose(inverse("+aMatrixHelper.model+"))) * aNormal;\n"
+//        "Normal = aNormal;\n"
         "}";
 
 QString fragmentShaderCode =
@@ -49,7 +49,7 @@ QString fragmentShaderCode =
 
         "out vec4 fragColor;\n"
         "in vec3 Normal;\n"
-        "in vec3 FragPosInWorld;\n"
+        "in vec3 FragPos;\n"
 
         "uniform vec3 "+objectColor+";\n"
         "uniform vec3 "+lightColor+";\n"
@@ -59,13 +59,13 @@ QString fragmentShaderCode =
         "void main(){\n"
 
         "vec3 norm = normalize(Normal);\n"
-        "vec3 lightDir = normalize(lightPos - FragPosInWorld);\n"
+        "vec3 lightDir = normalize(lightPos - FragPos);\n"
         "float diff = max(dot(norm, lightDir), 0.0f);\n"
         "vec3 diffuse = diff * lightColor;\n"
 
         "float specularStrength = 0.5f;\n"
         // both a camera and a fragment position is in the world space:
-        "vec3 viewDir = normalize(cameraPos - FragPosInWorld);\n"
+        "vec3 viewDir = normalize(-FragPos);\n"//cameraPos
         "vec3 reflectionDir = reflect(-lightDir, norm);\n"
         "int shininess = 32;\n"
         "float spec = pow(max(dot(viewDir, reflectionDir), 0.0f), shininess);\n"
