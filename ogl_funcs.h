@@ -22,7 +22,7 @@ private:
     QTimer timerForFrameBuffer;
 
 
-    void createBufObjectsForVertices(bool isFirstTriangle);
+    void createBufObjectsForVertices();
     void setAttribs();
 
 

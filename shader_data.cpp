@@ -1,6 +1,6 @@
 #include "shader_data.h"
 
-VBO_HELPER_VERTEX_COLOR_TEXTURE(aPos, 0, aColor, 1, aTextureCoord, 2);
+VA_HELPER_VERTEX_COLOR_TEXTURE(aPos, 0, aColor, 1, aTextureCoord, 2);
 
 sMatrixHelper<QMatrix4x4> aMatrixHelper;
 

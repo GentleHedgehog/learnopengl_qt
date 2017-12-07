@@ -8,14 +8,15 @@
 #include "texture_holder.h"
 #include "framebuffer.h"
 #include "Lighting/lighting.h"
+#include <QOpenGLBuffer>
 
 typedef OGL_funcs cls;
 
 namespace
 {
     QOpenGLVertexArrayObject VAO[2];
-    quint32 EBO[2] = {0};
-    quint32 VBO[2] = {0};
+    QOpenGLBuffer vbo(QOpenGLBuffer::VertexBuffer);
+    QOpenGLBuffer ebo(QOpenGLBuffer::IndexBuffer);
 
     bool isPolygoneModeLine = false;
     bool isPolygoneModeFill = true;
@@ -55,37 +56,19 @@ cls::OGL_funcs(QWidget *parent) :
 //    timerForFrameBuffer.start();
 }
 
-void cls::createBufObjectsForVertices(bool isFirstTriangle)
+void cls::createBufObjectsForVertices()
 {
-    if (isFirstTriangle)
-    {
-        quint32 bufCountForGen = 2;
-        glGenBuffers(bufCountForGen, VBO);
-        glGenBuffers(bufCountForGen, EBO);
+    assert (vbo.create());
+    assert (vbo.bind());
+    vbo.setUsagePattern(QOpenGLBuffer::StaticDraw);
+    vbo.allocate(static_cast<void*>(vertices_first_cube),
+                 sizeof(vertices_first_cube));
 
-//        DEBUG_NM(VBO[0]);
-//        DEBUG_NM(EBO[0]);
-//        DEBUG_NM(VBO[1]);
-//        DEBUG_NM(EBO[1]);
-
-        glBindBuffer(GL_ARRAY_BUFFER, VBO[0]);
-        glBufferData(GL_ARRAY_BUFFER, sizeof(vertices_first_cube),
-                     static_cast<void*>(vertices_first_cube), GL_STATIC_DRAW);
-
-        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO[0]);
-        glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices_first_cube),
-                     static_cast<void*>(indices_first_cube), GL_STATIC_DRAW);
-    }
-    else
-    {
-        glBindBuffer(GL_ARRAY_BUFFER, VBO[1]);
-        glBufferData(GL_ARRAY_BUFFER, sizeof(vertices_second_triangle),
-                     static_cast<void*>(vertices_second_triangle), GL_STATIC_DRAW);
-
-        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO[1]);
-        glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices_second_triangle),
-                     static_cast<void*>(indices_second_triangle), GL_STATIC_DRAW);
-    }
+    assert (ebo.create());
+    assert (ebo.bind());
+    ebo.setUsagePattern(QOpenGLBuffer::StaticDraw);
+    ebo.allocate(static_cast<void*>(indices_first_cube),
+                 sizeof(indices_first_cube));
 
 }
 
@@ -120,7 +103,7 @@ void cls::initializeGL()
 
     assert(VAO[0].create());
     VAO[0].bind();
-    createBufObjectsForVertices(true);
+    createBufObjectsForVertices();
     setAttribs();
     VAO[0].release();
 

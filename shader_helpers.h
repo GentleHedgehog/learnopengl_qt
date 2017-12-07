@@ -4,7 +4,7 @@
 #include <QObject>
 #include "shader_program_set.h"
 
-struct sVboHelper
+struct sVertexAttributesHelper
 {
 //    enum eType{
 //        VERTEX,
@@ -19,7 +19,7 @@ struct sVboHelper
     GLuint stride;
     GLuint offset;
 
-    sVboHelper(/*eType type,*/
+    sVertexAttributesHelper(/*eType type,*/
                QString name,
                GLuint location,
                GLuint elementCount,
@@ -52,27 +52,38 @@ struct sVboHelper
 
 };
 
-#undef VBO_HELPER
-#define VBO_HELPER(name, location, elementCount, stride, offset) \
-    sVboHelper name(""#name"", location, elementCount, stride, offset)
+#undef VERTEX_ATTRIBUTES_HELPER
+#define VERTEX_ATTRIBUTES_HELPER(name, location, elementCount,\
+                                 stride, offset) \
+    sVertexAttributesHelper name(""#name"", location, elementCount, \
+                                 stride, offset)
 
-#undef VBO_HELPER_VERTEX
-#define VBO_HELPER_VERTEX(name, location) \
-    VBO_HELPER(name, location, 3, 3 * sizeof(GL_FLOAT), 0)
+#undef VA_HELPER_VERTEX
+#define VA_HELPER_VERTEX(name, location) \
+    VERTEX_ATTRIBUTES_HELPER(name, location, \
+                             3, 3 * sizeof(GL_FLOAT), 0)
 
-#undef VBO_HELPER_VERTEX_COLOR
-#define VBO_HELPER_VERTEX_COLOR(nameVertex, locationVertex, \
+#undef VA_HELPER_VERTEX_COLOR
+#define VA_HELPER_VERTEX_COLOR(nameVertex, locationVertex, \
                                 nameColor, locationColor) \
-    VBO_HELPER(nameVertex, locationVertex, 3, 6 * sizeof(GL_FLOAT), 0);\
-    VBO_HELPER(nameColor, locationColor, 3, 6 * sizeof(GL_FLOAT), 3 * sizeof(GL_FLOAT))
+    VERTEX_ATTRIBUTES_HELPER(nameVertex, locationVertex, \
+                             3, 6 * sizeof(GL_FLOAT), 0);\
+    VERTEX_ATTRIBUTES_HELPER(nameColor, locationColor, \
+                             3, 6 * sizeof(GL_FLOAT), \
+                             3 * sizeof(GL_FLOAT))
 
-#undef VBO_HELPER_VERTEX_COLOR_TEXTURE
-#define VBO_HELPER_VERTEX_COLOR_TEXTURE(nameVertex, locationVertex, \
+#undef VA_HELPER_VERTEX_COLOR_TEXTURE
+#define VA_HELPER_VERTEX_COLOR_TEXTURE(nameVertex, locationVertex, \
                                         nameColor, locationColor,\
                                         nameTexture, locationTexture) \
-    VBO_HELPER(nameVertex, locationVertex, 3, 8 * sizeof(GL_FLOAT), 0);\
-    VBO_HELPER(nameColor, locationColor, 3, 8 * sizeof(GL_FLOAT), 3 * sizeof(GL_FLOAT));\
-    VBO_HELPER(nameTexture, locationTexture, 2, 8 * sizeof(GL_FLOAT), 6 * sizeof(GL_FLOAT))
+    VERTEX_ATTRIBUTES_HELPER(nameVertex, locationVertex, \
+                             3, 8 * sizeof(GL_FLOAT), 0);\
+    VERTEX_ATTRIBUTES_HELPER(nameColor, locationColor, \
+                             3, 8 * sizeof(GL_FLOAT), \
+                             3 * sizeof(GL_FLOAT));\
+    VERTEX_ATTRIBUTES_HELPER(nameTexture, locationTexture,\
+                             2, 8 * sizeof(GL_FLOAT), \
+                             6 * sizeof(GL_FLOAT))
 
 
 

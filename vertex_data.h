@@ -92,14 +92,6 @@ QMatrix4x4 cubesModelMatrices[sizeof(cubesPositions)/sizeof(cubesPositions[0])];
 
 
 
-float vertices_second_triangle[] = {
-    0.5f,  0.5f, 0.0f, // top
-    0.0f, -0.5f, 0.0f, // bottom left
-    0.9f, -0.5f, 0.0f, // bottom right
-};
 
-unsigned int indices_second_triangle[] = {
-    0, 1, 2,
-};
 
 #endif // VERTEX_DATA_H
