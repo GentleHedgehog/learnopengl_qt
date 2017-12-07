@@ -75,8 +75,7 @@ void cls::createBufObjectsForVertices()
 void cls::setAttribs()
 {
     aPos.applyAttrib(this);
-    aColor.applyAttrib(this);
-    aTextureCoord.applyAttrib(this);
+    aNormal.applyAttrib(this);
 }
 
 void cls::initializeGL()
@@ -147,6 +146,8 @@ void cls::paintGL()
                                 QVector3D(1.0f, 0.5f, 0.31f));
     programUsual->setUniformValue(lightColor.toUtf8().constData(),
                                 QVector3D(1.0f, 1.0f, 1.0f));
+    programUsual->setUniformValue("lightPos",
+                                  aLighting.lightPos);
 
 
     VAO[0].bind();

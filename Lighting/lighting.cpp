@@ -15,7 +15,7 @@ QString fragmentShaderCodeForLight =
         "fragColor = vec4(1.0f);\n"
         "}";
 
-QVector3D lightPos(1.2f, 1.0f, 2.0f);
+
 
 }
 
@@ -40,8 +40,7 @@ void Lighting::initVAO(QOpenGLBuffer vbo, QOpenGLBuffer ebo)
     assert(ebo.bind());
 
     aPos.applyAttrib(f);
-    aColor.applyAttrib(f);
-    aTextureCoord.applyAttrib(f);
+    aNormal.applyAttrib(f);
 
     VAO.release();
 }
