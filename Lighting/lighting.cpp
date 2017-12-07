@@ -15,7 +15,7 @@ QString fragmentShaderCodeForLight =
         "fragColor = vec4(1.0f);\n"
         "}";
 
-QVector3D lightPos(1.2f, 1.0f, 2.0f);
+
 
 }
 
@@ -40,14 +40,22 @@ void Lighting::initVAO(QOpenGLBuffer vbo, QOpenGLBuffer ebo)
     assert(ebo.bind());
 
     aPos.applyAttrib(f);
-    aColor.applyAttrib(f);
-    aTextureCoord.applyAttrib(f);
+    aNormal.applyAttrib(f);
 
     VAO.release();
 }
-
+#include <QtMath>
 void Lighting::doPaintWork()
 {
+    static float counter = 0.0f;
+    counter += 0.005f;
+
+    float x = 0.0f, z = 0.0f;
+    x = qCos(qDegreesToRadians((float)((int)counter % 360)));
+    z = qSin(qDegreesToRadians((float)((int)counter % 360)));
+
+    lightPos.setX(x);
+    lightPos.setZ(z);
 
     aMatrixHelper.modelMat.translate(lightPos);
     aMatrixHelper.modelMat.scale(0.2f);

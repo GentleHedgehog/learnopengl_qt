@@ -87,6 +87,17 @@ struct sVertexAttributesHelper
 
 
 
+#undef VA_HELPER_VERTEX_NORMAL
+#define VA_HELPER_VERTEX_NORMAL(nameVertex, locationVertex, \
+                                nameNormal, locationNormal) \
+    VERTEX_ATTRIBUTES_HELPER(nameVertex, locationVertex, \
+                             3, 6 * sizeof(GL_FLOAT), 0);\
+    VERTEX_ATTRIBUTES_HELPER(nameNormal, locationNormal, \
+                             3, 6 * sizeof(GL_FLOAT), \
+                             3 * sizeof(GL_FLOAT))
+
+
+
 
 
 template <class MatrixType>

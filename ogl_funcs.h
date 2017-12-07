@@ -35,6 +35,7 @@ private:
     void keyPressEvent(QKeyEvent *event) override;
     void mouseMoveEvent(QMouseEvent *event) override;
     void wheelEvent(QWheelEvent *event) override;
+    void render();
 };
 
 #endif // OGL_FUNCS_H

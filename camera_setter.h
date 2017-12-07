@@ -12,6 +12,7 @@ public:
     explicit CameraSetter(QObject *parent = 0);
 
     QVector3D cameraFront;
+    QVector3D cameraPosition;
     float fov = 45.0f;
 
     int screenWidth = 800;
@@ -34,7 +35,6 @@ signals:
 public slots:
 
 private:
-    QVector3D cameraPosition;
     QVector3D cameraTarget;
     QVector3D cameraDirection;
     QVector3D cameraRight;

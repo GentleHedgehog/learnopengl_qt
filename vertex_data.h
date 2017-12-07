@@ -5,42 +5,42 @@
 #include <QMatrix4x4>
 
 float vertices_first_cube[] = {
-    // vertex               // color            // tex coord
+    // vertex               // normals
     // front
-   -0.5f,  0.5f,   0.5f,      1.0, 0.0, 0.0,      0.0f, 1.0f,// top left                  0
-    0.5f,  0.5f,   0.5f,      1.0, 0.0, 0.0,      1.0f, 1.0f,// top right                 1
-   -0.5f, -0.5f,   0.5f,      0.0, 1.0, 0.0,      0.0f, 0.0f,// bottom left               2
-    0.5f, -0.5f,   0.5f,      0.0, 0.0, 1.0,      1.0f, 0.0f,// bottom right              3
+   -0.5f,  0.5f,   0.5f,      0.0, 0.0, 1.0,      // top left                  0
+    0.5f,  0.5f,   0.5f,      0.0, 0.0, 1.0,      // top right                 1
+   -0.5f, -0.5f,   0.5f,      0.0, 0.0, 1.0,      // bottom left               2
+    0.5f, -0.5f,   0.5f,      0.0, 0.0, 1.0,      // bottom right              3
 
     // rear
-    -0.5f,  0.5f, -0.5f,      1.0, 0.0, 0.0,      1.0f, 1.0f,// top left rear           4
-     0.5f,  0.5f, -0.5f,      1.0, 0.0, 0.0,      0.0f, 1.0f,// top right rear          5
-    -0.5f, -0.5f, -0.5f,      0.0, 1.0, 0.0,      1.0f, 0.0f,// bottom left rear        6
-     0.5f, -0.5f, -0.5f,      0.0, 0.0, 1.0,      0.0f, 0.0f,// bottom right rear       7
+    -0.5f,  0.5f, -0.5f,      0.0, 0.0, -1.0,      // top left rear           4
+     0.5f,  0.5f, -0.5f,      0.0, 0.0, -1.0,      // top right rear          5
+    -0.5f, -0.5f, -0.5f,      0.0, 0.0, -1.0,      // bottom left rear        6
+     0.5f, -0.5f, -0.5f,      0.0, 0.0, -1.0,      // bottom right rear       7
 
     // left
-    -0.5f, -0.5f,  0.5f,      0.0, 1.0, 0.0,      1.0f, 0.0f,// bottom left              2/8
-    -0.5f, -0.5f, -0.5f,      0.0, 1.0, 0.0,     0.0f, 0.0f,// bottom left rear         6/9
-    -0.5f,  0.5f,  0.5f,      1.0, 0.0, 0.0,      1.0f, 1.0f,// top left                 0/10
-    -0.5f,  0.5f, -0.5f,      1.0, 0.0, 0.0,     0.0f, 1.0f,// top left rear            4/11
+    -0.5f, -0.5f,  0.5f,      -1.0, 0.0, 0.0,      // bottom left              2/8
+    -0.5f, -0.5f, -0.5f,      -1.0, 0.0, 0.0,      // bottom left rear         6/9
+    -0.5f,  0.5f,  0.5f,      -1.0, 0.0, 0.0,      // top left                 0/10
+    -0.5f,  0.5f, -0.5f,      -1.0, 0.0, 0.0,      // top left rear            4/11
 
     // right
-    0.5f,  0.5f,   0.5f,      1.0, 0.0, 0.0,      0.0f, 1.0f,// top right                 1/12
-    0.5f, -0.5f,   0.5f,      0.0, 0.0, 1.0,      0.0f, 0.0f,// bottom right              3/13
-    0.5f, -0.5f,  -0.5f,      0.0, 0.0, 1.0,     1.0f, 0.0f,// bottom right rear        7/14
-    0.5f,  0.5f,  -0.5f,      1.0, 0.0, 0.0,     1.0f, 1.0f,// top right rear           5/15
+    0.5f,  0.5f,   0.5f,      1.0, 0.0, 0.0,      // top right                 1/12
+    0.5f, -0.5f,   0.5f,      1.0, 0.0, 0.0,      // bottom right              3/13
+    0.5f, -0.5f,  -0.5f,      1.0, 0.0, 0.0,      // bottom right rear        7/14
+    0.5f,  0.5f,  -0.5f,      1.0, 0.0, 0.0,      // top right rear           5/15
 
     // top
-    -0.5f,  0.5f,  0.5f,      1.0, 0.0, 0.0,      0.0f, 1.0f,// top left                  0/16
-     0.5f,  0.5f,  0.5f,      1.0, 0.0, 0.0,      1.0f, 1.0f,// top right                 1/17
-    -0.5f,  0.5f, -0.5f,      1.0, 0.0, 0.0,    0.0f, 0.0f,// top left rear           4/18
-     0.5f,  0.5f, -0.5f,      1.0, 0.0, 0.0,    1.0f, 0.0f,// top right rear          5/19
+    -0.5f,  0.5f,  0.5f,      0.0, 1.0, 0.0,      // top left                  0/16
+     0.5f,  0.5f,  0.5f,      0.0, 1.0, 0.0,      // top right                 1/17
+    -0.5f,  0.5f, -0.5f,      0.0, 1.0, 0.0,      // top left rear           4/18
+     0.5f,  0.5f, -0.5f,      0.0, 1.0, 0.0,      // top right rear          5/19
 
     //bottom
-    -0.5f, -0.5f,  0.5f,      0.0, 1.0, 0.0,      0.0f, 1.0f,// bottom left               2/20
-     0.5f, -0.5f,  0.5f,      0.0, 0.0, 1.0,      1.0f, 1.0f,// bottom right              3/21
-    -0.5f, -0.5f, -0.5f,      0.0, 1.0, 0.0,    0.0f, 0.0f,// bottom left rear        6/22
-     0.5f, -0.5f, -0.5f,      0.0, 0.0, 1.0,    1.0f, 0.0f,// bottom right rear       7/23
+    -0.5f, -0.5f,  0.5f,      0.0, -1.0, 0.0,      // bottom left               2/20
+     0.5f, -0.5f,  0.5f,      0.0, -1.0, 0.0,      // bottom right              3/21
+    -0.5f, -0.5f, -0.5f,      0.0, -1.0, 0.0,      // bottom left rear        6/22
+     0.5f, -0.5f, -0.5f,      0.0, -1.0, 0.0,      // bottom right rear       7/23
 };
 
 /*

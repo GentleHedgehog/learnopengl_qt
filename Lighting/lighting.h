@@ -7,6 +7,9 @@ class Lighting : public AccessToQtOpenGl
 {
     Q_OBJECT
 public:
+
+    QVector3D lightPos = {1.2f, 1.0f, 2.0f};
+
     Lighting(QObject *parent=0);
 
     QOpenGLVertexArrayObject VAO;
