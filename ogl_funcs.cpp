@@ -129,18 +129,8 @@ void cls::initializeGL()
 
 }
 
-void cls::paintGL()
+void OGL_funcs::render()
 {
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_MIRRORED_REPEAT);
-
-//    DEBUG("repaint");
-
-    glEnable(GL_DEPTH_TEST);
-    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
-//    aTextureHolder.doPaintWork();
-    aCameraSetter.notifyAboutNewFrame();    
-
     programUsual->use();
     programUsual->setUniformValue(objectColor.toUtf8().constData(),
                                 QVector3D(1.0f, 0.5f, 0.31f));
@@ -148,11 +138,12 @@ void cls::paintGL()
                                 QVector3D(1.0f, 1.0f, 1.0f));
     programUsual->setUniformValue("lightPos",
                                   aLighting.lightPos);
+    programUsual->setUniformValue("cameraPos",
+                                  aCameraSetter.cameraPosition);
 
 
     VAO[0].bind();
 //    glDrawArrays(GL_TRIANGLES, 0, 3);
-
 
     for (size_t i = 0; i < sizeofArray(cubesPositions); ++i)
     {
@@ -172,12 +163,24 @@ void cls::paintGL()
 
         glDrawElements(GL_TRIANGLES, 6*6, GL_UNSIGNED_INT, 0);
     }
-
-
-    aCameraSetter.updateMatrices();
-
-
     VAO[0].release();
+}
+
+void cls::paintGL()
+{
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_MIRRORED_REPEAT);
+
+//    DEBUG("repaint");
+
+    glEnable(GL_DEPTH_TEST);
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+
+    render();
+
+//    aTextureHolder.doPaintWork();
+    aCameraSetter.notifyAboutNewFrame();
+    aCameraSetter.updateMatrices();
 
     aLighting.doPaintWork();
 

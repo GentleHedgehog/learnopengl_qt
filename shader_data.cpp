@@ -54,14 +54,26 @@ QString fragmentShaderCode =
         "uniform vec3 "+objectColor+";\n"
         "uniform vec3 "+lightColor+";\n"
         "uniform vec3 lightPos;\n"
+        "uniform vec3 cameraPos;\n"
 
         "void main(){\n"
+
         "vec3 norm = normalize(Normal);\n"
         "vec3 lightDir = normalize(lightPos - FragPosInWorld);\n"
         "float diff = max(dot(norm, lightDir), 0.0f);\n"
         "vec3 diffuse = diff * lightColor;\n"
+
+        "float specularStrength = 0.5f;\n"
+        // both a camera and a fragment position is in the world space:
+        "vec3 viewDir = normalize(cameraPos - FragPosInWorld);\n"
+        "vec3 reflectionDir = reflect(-lightDir, norm);\n"
+        "int shininess = 32;\n"
+        "float spec = pow(max(dot(viewDir, reflectionDir), 0.0f), shininess);\n"
+        "vec3 specular = specularStrength * spec * lightColor;\n"
+
         "float ambientKoef = 0.1f;\n"
         "vec3 ambient = lightColor * ambientKoef;\n"
-        "fragColor = vec4(objectColor * (diffuse+ambient), 1.0f);\n"
+
+        "fragColor = vec4(objectColor * (diffuse+ambient+specular), 1.0f);\n"
         "}";
 
