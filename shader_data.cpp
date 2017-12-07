@@ -21,7 +21,9 @@ QString vertexShaderCode =
 
         "out vec3 Normal;\n"
         "out vec3 FragPos;\n"
+        "out vec3 LightPos;\n"
 
+        "uniform vec3 lightPos;\n"
         "uniform mat4 "+aMatrixHelper.model+";\n"
         "uniform mat4 "+aMatrixHelper.view+";\n"
         "uniform mat4 "+aMatrixHelper.projection+";\n"
@@ -38,6 +40,10 @@ QString vertexShaderCode =
         aMatrixHelper.model +
         " * vec4(" + aPos.name + ", 1.0));\n"
 
+        "LightPos = vec3(" +
+        aMatrixHelper.view +
+        " * vec4(lightPos, 1.0));\n"
+
         // calc with Normal matrix to consider changes in the model matrix for normals
         // (not efficient - calc on the CPU side):
         "Normal = mat3(transpose(inverse("+aMatrixHelper.model+"))) * aNormal;\n"
@@ -50,16 +56,16 @@ QString fragmentShaderCode =
         "out vec4 fragColor;\n"
         "in vec3 Normal;\n"
         "in vec3 FragPos;\n"
+        "in vec3 LightPos;\n"
 
         "uniform vec3 "+objectColor+";\n"
-        "uniform vec3 "+lightColor+";\n"
-        "uniform vec3 lightPos;\n"
+        "uniform vec3 "+lightColor+";\n"        
         "uniform vec3 cameraPos;\n"
 
         "void main(){\n"
 
         "vec3 norm = normalize(Normal);\n"
-        "vec3 lightDir = normalize(lightPos - FragPos);\n"
+        "vec3 lightDir = normalize(LightPos - FragPos);\n"
         "float diff = max(dot(norm, lightDir), 0.0f);\n"
         "vec3 diffuse = diff * lightColor;\n"
 

@@ -48,7 +48,7 @@ void Lighting::initVAO(QOpenGLBuffer vbo, QOpenGLBuffer ebo)
 void Lighting::doPaintWork()
 {
     static float counter = 0.0f;
-    counter += 0.01f;
+    counter += 0.005f;
 
     float x = 0.0f, z = 0.0f;
     x = qCos(qDegreesToRadians((float)((int)counter % 360)));

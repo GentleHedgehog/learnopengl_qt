@@ -137,9 +137,8 @@ void OGL_funcs::render()
     programUsual->setUniformValue(lightColor.toUtf8().constData(),
                                 QVector3D(1.0f, 1.0f, 1.0f));
 
-    QVector3D lightPosInView = aMatrixHelper.viewMat * aLighting.lightPos;
     programUsual->setUniformValue("lightPos",
-                                  lightPosInView);
+                                  aLighting.lightPos);
     programUsual->setUniformValue("cameraPos",
                                   aCameraSetter.cameraPosition);
 
