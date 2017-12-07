@@ -11,31 +11,28 @@ cls::CameraSetter(QObject *parent) : AccessToQtOpenGl(parent)
 
 }
 
-void cls::initialize(const QGLContext *curContext,
-                     QGLFunctions *funcs,
-                     ShaderProgramSet *prog)
+void cls::updateMatrices()
 {
-    AccessToQtOpenGl::initialize(curContext, funcs, prog);
+    updateCurrentViewMatrix();
+    updateCurrentProjMatrix();
+    aMatrixHelper.loadMatrixToShader(programSet);
+}
+
+void cls::initialize(ShaderProgramSet *prog)
+{
+    AccessToQtOpenGl::initialize(prog);
 
 
-    programSet->useProgram();
+    programSet->use();
 //    QVector3D vecForModelRotation(1.0f, 0.0f, 0.0f);
-//    modelMatrix.rotate(-55.0f, vecForModelRotation);
-    viewMatrix.translate(0.0f, 0.0f, 0.0f);
-    projectionMatrix.perspective(fov,
+//    aMatrixHelper.modelMat.rotate(-55.0f, vecForModelRotation);
+//    aMatrixHelper.modelMat.translate(0.0f, 0.0f, 0.0f);
+    aMatrixHelper.viewMat.translate(0.0f, 0.0f, 0.0f);
+    aMatrixHelper.projMat.perspective(fov,
                                   (screenWidth / screenHeight),
                                   0.1f, 100.0f);
-//    projectionMatrix.ortho(0.0f, screenWidth,
-//                           0.0f, screenHeight,
-//                           0.1f, 100.0f);
 
-    programSet->setUniformMatrixValue(SHD_MODEL_MATRIX_NAME,
-                                       modelMatrix.constData());
-    programSet->setUniformMatrixValue(SHD_VIEW_MATRIX_NAME,
-                                       viewMatrix.constData());
-    programSet->setUniformMatrixValue(SHD_PROJ_MATRIX_NAME,
-                                       projectionMatrix.constData());
-
+    aMatrixHelper.loadMatrixToShader(programSet);
 
     cameraPosition = QVector3D(0.0f, 0.0f, 3.0f);
     cameraFront = QVector3D(0.0f, 0.0f, -1.0f);
@@ -55,32 +52,27 @@ void cls::initialize(const QGLContext *curContext,
 //    lookAtMatrix.lookAt(cameraPosition, cameraTarget, cameraUp);
 }
 
-QMatrix4x4 cls::getCurrentProjMatrix()
+QMatrix4x4 cls::updateCurrentProjMatrix()
 {
-    projectionMatrix.setToIdentity();
-    projectionMatrix.perspective(fov,
+    aMatrixHelper.projMat.setToIdentity();
+    aMatrixHelper.projMat.perspective(fov,
                                   (screenWidth / screenHeight),
                                   0.1f, 100.0f);
 
-    return projectionMatrix;
+    return aMatrixHelper.projMat;
 
 }
 
-QMatrix4x4 cls::getCurrentViewMatrix()
+QMatrix4x4 cls::updateCurrentViewMatrix()
 {
-//    static int angle = 0;
-    QMatrix4x4 view;
-//    int radius = 10.0f;
-//    angle++;
-//    float x = qSin(qDegreesToRadians((float)(angle % 360))) * radius;
-//    float z = qCos(qDegreesToRadians((float)(angle % 360))) * radius;
-
     QVector3D eye = cameraPosition;
     QVector3D center/*(0.0f, 0.0f, 0.0f);*/ = cameraPosition + cameraFront;
     QVector3D up = cameraUp;
-    view.lookAt(eye, center, up);
 
-    return view;
+    aMatrixHelper.viewMat.setToIdentity();
+    aMatrixHelper.viewMat.lookAt(eye, center, up);
+
+    return aMatrixHelper.viewMat;
 }
 
 void cls::moveCameraForward()

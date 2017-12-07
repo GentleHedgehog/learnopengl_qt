@@ -11,9 +11,7 @@ public:
 
     explicit TextureHolder(QObject *parent = 0);
 
-    void initialize(const QGLContext *curContext,
-                    QGLFunctions *funcs,
-                    ShaderProgramSet *prog) override;
+    void initialize(ShaderProgramSet *prog) override;
 
     void doPaintWork();
 

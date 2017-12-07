@@ -6,41 +6,39 @@
 #include <QGLShaderProgram>
 #include <QGLFunctions>
 
-class ShaderProgramSet{
+class ShaderProgramSet : public QGLShaderProgram
+{
 
 public:
 
     QGLShader *vertexShader = 0;
     QGLShader *fragmentShader = 0;
-    QGLShaderProgram *shaderProgram = 0;
     const QGLContext *context = 0;
+    QGLFunctions *f = 0;
 
     QString vertexShaderCode;
     QString fragmentShaderCode;
 
     ShaderProgramSet(QString vrtxShaderCode,
-                   QString frgmntShaderCode);
+                     QString frgmntShaderCode,
+                     const QGLContext *curContext,
+                     QGLFunctions *funcs,
+                     QObject *parent = 0);
 
-    void initialize(const QGLContext *curContext,
-                    QGLFunctions *funcs);
+    void initialize();
 
     void compile();
 
-    void link();
+    bool link() override;
 
-    void useProgram();
+    void use();
 
     void deleteShaders();
-
-    void setUniformValue(QString name, qint32 value);
-    void setUniformValue(QString name, float value);
-    void setUniformMatrixValue(QString name, const float *columnMajorMatrixData);
 
 
 private:
     bool isInitialize();
 
-    QGLFunctions *f;
 };
 
 #endif // SHADER_PROGRAM_SET_H

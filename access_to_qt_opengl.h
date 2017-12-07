@@ -1,6 +1,8 @@
 #ifndef ACCESSTOQTOPENGL_H
 #define ACCESSTOQTOPENGL_H
 
+#include <QOpenGLVertexArrayObject>
+#include <QOpenGLBuffer>
 #include "shader_program_set.h"
 
 class AccessToQtOpenGl : public QObject
@@ -9,19 +11,17 @@ class AccessToQtOpenGl : public QObject
 public:
     AccessToQtOpenGl(QObject *parent=0);
 
-    virtual void initialize(const QGLContext *curContext,
-                         QGLFunctions *funcs,
-                         ShaderProgramSet *prog)
+    virtual void initialize(ShaderProgramSet *prog)
     {
-        context = curContext;
-        f = funcs;
         programSet = prog;
+        context = prog->context;
+        f = prog->f;
     }
 
 protected:
-    const QGLContext *context = 0;
-    QGLFunctions *f;
-    ShaderProgramSet *programSet;
+    ShaderProgramSet *programSet=0;
+    const QGLContext *context=0;
+    QGLFunctions *f=0;
 };
 
 #endif // ACCESSTOQTOPENGL_H

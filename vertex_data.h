@@ -77,29 +77,21 @@ unsigned int indices_first_cube[] = {
 
 QVector3D cubesPositions[] = {
     QVector3D( 0.0f, 0.0f, 0.0f),
-    QVector3D( 2.0f, 5.0f, -15.0f),
-    QVector3D(-1.5f, -2.2f, -2.5f),
-    QVector3D(-3.8f, -2.0f, -12.3f),
-    QVector3D( 2.4f, -0.4f, -3.5f),
-    QVector3D(-1.7f, 3.0f, -7.5f),
-    QVector3D( 1.3f, -2.0f, -2.5f),
-    QVector3D( 1.5f, 2.0f, -2.5f),
-    QVector3D( 1.5f, 0.2f, -1.5f),
-    QVector3D(-1.3f, 1.0f, -1.5f)
+//    QVector3D( 2.0f, 5.0f, -15.0f),
+//    QVector3D(-1.5f, -2.2f, -2.5f),
+//    QVector3D(-3.8f, -2.0f, -12.3f),
+//    QVector3D( 2.4f, -0.4f, -3.5f),
+//    QVector3D(-1.7f, 3.0f, -7.5f),
+//    QVector3D( 1.3f, -2.0f, -2.5f),
+//    QVector3D( 1.5f, 2.0f, -2.5f),
+//    QVector3D( 1.5f, 0.2f, -1.5f),
+//    QVector3D(-1.3f, 1.0f, -1.5f)
 };
 
-QMatrix4x4 cubesModelMatrices[10];
+QMatrix4x4 cubesModelMatrices[sizeof(cubesPositions)/sizeof(cubesPositions[0])];
 
 
 
-float vertices_second_triangle[] = {
-    0.5f,  0.5f, 0.0f, // top
-    0.0f, -0.5f, 0.0f, // bottom left
-    0.9f, -0.5f, 0.0f, // bottom right
-};
 
-unsigned int indices_second_triangle[] = {
-    0, 1, 2,
-};
 
 #endif // VERTEX_DATA_H
