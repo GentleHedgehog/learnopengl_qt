@@ -11,8 +11,8 @@ public:
 
     QOpenGLVertexArrayObject VAO;
 
-    void initVAO(int VBO);
-    void doPaintWork(int VBO);
+    void initVAO(QOpenGLBuffer vbo, QOpenGLBuffer ebo);
+    void doPaintWork();
 };
 
 #endif // LIGHTING_H

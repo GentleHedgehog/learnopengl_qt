@@ -1,38 +1,60 @@
 #include "lighting.h"
-#include "shader_data_for_lighting.h"
+#include "shader_data.h"
+#include <cassert>
 
-using namespace nLighting;
+namespace {
+
+ShaderProgramSet *lightingProgram;
+
+QString fragmentShaderCodeForLight =
+        "#version 330 core\n"
+
+        "out vec4 fragColor;\n\n"
+
+        "void main(){\n"
+        "fragColor = vec4(1.0f);\n"
+        "}";
+
+QVector3D lightPos(1.2f, 1.0f, 2.0f);
+
+}
 
 Lighting::Lighting(QObject *parent) :
     AccessToQtOpenGl(parent)
 {
-
 }
 
-void Lighting::initVAO(int VBO)
+void Lighting::initVAO(QOpenGLBuffer vbo, QOpenGLBuffer ebo)
 {
-    VAO.create();
+    lightingProgram = new ShaderProgramSet(
+                vertexShaderCode, fragmentShaderCodeForLight,
+                context, f, this);
+    lightingProgram->compile();
+    assert(lightingProgram->link());
+
+
+    assert(VAO.create());
     VAO.bind();
 
-    f->glBindBuffer(GL_ARRAY_BUFFER, VBO);
+    assert(vbo.bind());
+    assert(ebo.bind());
 
-    f->glVertexAttribPointer(SHD_LOCATION_A_POS,
-                             SHD_ELEMENT_COUNT_A_POS,
-                             GL_FLOAT, GL_FALSE,
-                             SHD_STRIDE_A_POS,
-                             (void*)SHD_OFFSET_A_POS);
-    f->glEnableVertexAttribArray(SHD_LOCATION_A_POS);
+    aPos.applyAttrib(f);
+    aColor.applyAttrib(f);
+    aTextureCoord.applyAttrib(f);
 
     VAO.release();
 }
 
-void Lighting::doPaintWork(int VBO)
+void Lighting::doPaintWork()
 {
+
+    aMatrixHelper.modelMat.translate(lightPos);
+    aMatrixHelper.modelMat.scale(0.2f);
+    aMatrixHelper.loadMatrixToShader(lightingProgram);
+    aMatrixHelper.modelMat.translate(lightPos * -1);
+
     VAO.bind();
-    programSet->use();
-    programSet->setUniformValue(SHD_OBJECT_COLOR_NAME.toUtf8().constData(),
-                                QVector3D(1.0f, 0.5f, 0.31f));
-    programSet->setUniformValue(SHD_LIGHT_COLOR_NAME.toUtf8().constData(),
-                                QVector3D(1.0f, 1.0f, 1.0f));
+    glDrawElements(GL_TRIANGLES, 6*6, GL_UNSIGNED_INT, 0);
     VAO.release();
 }

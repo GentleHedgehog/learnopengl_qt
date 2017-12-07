@@ -2,6 +2,7 @@
 #define ACCESSTOQTOPENGL_H
 
 #include <QOpenGLVertexArrayObject>
+#include <QOpenGLBuffer>
 #include "shader_program_set.h"
 
 class AccessToQtOpenGl : public QObject

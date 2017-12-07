@@ -89,7 +89,7 @@ void cls::initializeGL()
 
     initializeGLFunctions(QGLContext::currentContext());
 
-    glClearColor(1.0, 1.0, 1.0, 1.0);
+    qglClearColor(Qt::black);
 
 //    qint32 nMaxVertexAttribs = 0;
 //    glGetIntegerv(GL_MAX_VERTEX_ATTRIBS, &nMaxVertexAttribs);
@@ -106,10 +106,6 @@ void cls::initializeGL()
     createBufObjectsForVertices();
     setAttribs();
     VAO[0].release();
-
-    DEBUG_NM(vertexShaderCode);
-    DEBUG_NM(fragmentShaderCode);
-
 
     programUsual = new ShaderProgramSet(
                 vertexShaderCode,
@@ -128,9 +124,9 @@ void cls::initializeGL()
 //    aFramebuffer.initialize(programUsual);
 //    aFramebuffer.create();
 
-//    aLighting.initialize(programUsual);
+    aLighting.initialize(programUsual);
 
-//    aLighting.initVAO(VBO[0]);
+    aLighting.initVAO(vbo, ebo);
 
 }
 
@@ -138,21 +134,23 @@ void cls::paintGL()
 {
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_MIRRORED_REPEAT);
 
-    programUsual->use();
-
 //    DEBUG("repaint");
 
     glEnable(GL_DEPTH_TEST);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 //    aTextureHolder.doPaintWork();
-    aCameraSetter.notifyAboutNewFrame();
+    aCameraSetter.notifyAboutNewFrame();    
+
+    programUsual->use();
+    programUsual->setUniformValue(objectColor.toUtf8().constData(),
+                                QVector3D(1.0f, 0.5f, 0.31f));
+    programUsual->setUniformValue(lightColor.toUtf8().constData(),
+                                QVector3D(1.0f, 1.0f, 1.0f));
+
 
     VAO[0].bind();
 //    glDrawArrays(GL_TRIANGLES, 0, 3);
-
-//    programUsual->setUniformValue(objectColor.toUtf8().constData(), QVector3D(1.0f, 0.5f, 0.31f));
-//    programUsual->setUniformValue(lightColor.toUtf8().constData(), QVector3D(1.0f, 1.0f, 1.0f));
 
 
     for (size_t i = 0; i < sizeofArray(cubesPositions); ++i)
@@ -179,6 +177,8 @@ void cls::paintGL()
 
 
     VAO[0].release();
+
+    aLighting.doPaintWork();
 
     if (isChangePolygoneMode)
     {
