@@ -3,7 +3,7 @@ QT += opengl
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
-CONFIG += console
+#CONFIG += console
 CONFIG += c++11
 CONFIG   -= debug_and_release debug_and_release_target
 
@@ -23,7 +23,9 @@ SOURCES += main.cpp \
     camera_setter.cpp \
     shader_data.cpp \
     framebuffer.cpp \
-    access_to_qt_opengl.cpp
+    access_to_qt_opengl.cpp \
+    Lighting/lighting.cpp \
+    shader_helpers.cpp
 
 #INCLUDEPATH += \
 #            "C:\Program Files (x86)\Microsoft SDKs\Windows\v7.0A\Include\gl"
@@ -43,7 +45,9 @@ HEADERS += \
     texture_holder.h \
     camera_setter.h \
     framebuffer.h \
-    access_to_qt_opengl.h
+    access_to_qt_opengl.h \
+    Lighting/lighting.h \
+    shader_helpers.h
 
 #LIBS += \
 #    -LC:\Qt\Qt5.7.0\5.7\mingw53_32\lib\libQt5OpenGL.a -lopengl32

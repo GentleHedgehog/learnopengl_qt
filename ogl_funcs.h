@@ -23,7 +23,7 @@ private:
 
 
     void createBufObjectsForVertices(bool isFirstTriangle);
-    void setAttribFroVertexAPos();
+    void setAttribs();
 
 
     void initializeGL();

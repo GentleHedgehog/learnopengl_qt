@@ -14,7 +14,7 @@ int main(int argc, char *argv[])
 
 
     OGL_funcs f;
-//    f.show();
+    f.show();
 //    f.doRenderWorkAnywhere();
 
 //    MathCalcs mc;

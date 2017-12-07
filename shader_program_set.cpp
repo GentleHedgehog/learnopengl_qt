@@ -11,19 +11,24 @@ typedef ShaderProgramSet cls;
     }while(0)
 
 cls::ShaderProgramSet(QString vrtxShaderCode,
-                      QString frgmntShaderCode)
-{
-    vertexShaderCode = vrtxShaderCode;
-    fragmentShaderCode = frgmntShaderCode;
-}
-
-void cls::initialize(const QGLContext *curContext, QGLFunctions *funcs)
+                      QString frgmntShaderCode,
+                      const QGLContext *curContext,
+                      QGLFunctions *funcs,
+                      QObject *parent):
+    QGLShaderProgram(curContext, parent)
 {
     context = curContext;
-    shaderProgram = new QGLShaderProgram(context);
+    f = funcs;
+
+    vertexShaderCode = vrtxShaderCode;
+    fragmentShaderCode = frgmntShaderCode;
+
     vertexShader = new QGLShader(QGLShader::Vertex);
     fragmentShader = new QGLShader(QGLShader::Fragment);
-    f = funcs;
+}
+
+void cls::initialize()
+{
 }
 
 void cls::compile()
@@ -45,65 +50,32 @@ void cls::compile()
     }
 }
 
-void cls::link()
+bool cls::link()
 {
-    RETURN_IS_NOT_INITIALIZE();
+    RETURN_IS_NOT_INITIALIZE(false);
 
-    shaderProgram->addShader(vertexShader);
-    shaderProgram->addShader(fragmentShader);
-    bool ok = shaderProgram->link();
+    addShader(vertexShader);
+    addShader(fragmentShader);
+    bool ok = QGLShaderProgram::link();
     if (! ok)
     {
-        DEBUG_NM(shaderProgram->log());
+        DEBUG_NM(log());
     }
+
+    return ok;
 }
 
-void cls::useProgram()
+void cls::use()
 {
     RETURN_IS_NOT_INITIALIZE();
-    shaderProgram->bind();
+    bind();
 }
 
 void cls::deleteShaders()
 {
 }
 
-void cls::setUniformValue(QString name, qint32 value)
-{
-    RETURN_IS_NOT_INITIALIZE();
-    f->glUniform1i(
-                f->glGetUniformLocation(
-                    shaderProgram->programId(),
-                    name.toUtf8().constData()),
-                value);
-}
-
-void cls::setUniformValue(QString name, float value)
-{
-    RETURN_IS_NOT_INITIALIZE();
-    f->glUniform1f(
-                f->glGetUniformLocation(
-                    shaderProgram->programId(),
-                    name.toUtf8().constData()),
-                value);
-}
-
-void cls::setUniformMatrixValue(QString name,
-                                const float *columnMajorMatrixData)
-{
-    RETURN_IS_NOT_INITIALIZE();
-    GLsizei countMatrices = 1;
-    GLboolean isNeedToTranspose = GL_FALSE;
-    f->glUniformMatrix4fv(
-                f->glGetUniformLocation(
-                    shaderProgram->programId(),
-                    name.toUtf8().constData()),
-                countMatrices,
-                isNeedToTranspose,
-                columnMajorMatrixData);
-}
-
 bool cls::isInitialize()
 {
-    return (shaderProgram != 0);
+    return ((context != 0) && (f != 0));
 }

@@ -14,23 +14,20 @@ public:
     QVector3D cameraFront;
     float fov = 45.0f;
 
-    QMatrix4x4 transformMatrix;
-    QMatrix4x4 modelMatrix;
-    QMatrix4x4 viewMatrix;
-    QMatrix4x4 projectionMatrix;
-
     int screenWidth = 800;
     int screenHeight = 600;
 
-    QMatrix4x4 getCurrentViewMatrix();
-    QMatrix4x4 getCurrentProjMatrix();
+    void updateMatrices();
+
+    QMatrix4x4 updateCurrentViewMatrix();
+    QMatrix4x4 updateCurrentProjMatrix();
     void moveCameraForward();
     void moveCameraBackward();
     void moveCameraRight();
     void moveCameraLeft();
     void notifyAboutNewFrame();
 
-    void initialize(const QGLContext *curContext, QGLFunctions *funcs, ShaderProgramSet *prog) override;
+    void initialize(ShaderProgramSet *prog) override;
 
 signals:
 

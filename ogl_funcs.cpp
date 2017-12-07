@@ -1,6 +1,5 @@
 #include "ogl_funcs.h"
 #include "UsableClass/Macros/macros.h"
-#include <QOpenGLVertexArrayObject>
 #include <QImage>
 
 #include "vertex_data.h"
@@ -8,6 +7,7 @@
 #include "camera_setter.h"
 #include "texture_holder.h"
 #include "framebuffer.h"
+#include "Lighting/lighting.h"
 
 typedef OGL_funcs cls;
 
@@ -29,6 +29,10 @@ namespace
     float pitch = 0, yaw = 0;
 
     bool isInitializeGl = false;
+
+    Lighting aLighting;
+
+    ShaderProgramSet *programUsual = 0;
 }
 
 cls::OGL_funcs(QWidget *parent) :
@@ -48,7 +52,7 @@ cls::OGL_funcs(QWidget *parent) :
     connect(&timerForFrameBuffer, SIGNAL(timeout()),
             this, SLOT(doRenderWorkAnywhere()) );
     timerForFrameBuffer.setInterval(2000);
-    timerForFrameBuffer.start();
+//    timerForFrameBuffer.start();
 }
 
 void cls::createBufObjectsForVertices(bool isFirstTriangle)
@@ -85,28 +89,11 @@ void cls::createBufObjectsForVertices(bool isFirstTriangle)
 
 }
 
-void cls::setAttribFroVertexAPos()
+void cls::setAttribs()
 {
-    glVertexAttribPointer(SHD_LOCATION_A_POS,
-                          SHD_ELEMENT_COUNT_A_POS,
-                          GL_FLOAT, GL_FALSE,
-                          SHD_STRIDE_A_POS,
-                          (void*)SHD_OFFSET_A_POS);
-    glEnableVertexAttribArray(SHD_LOCATION_A_POS);
-
-    glVertexAttribPointer(SHD_LOCATION_A_COLOR,
-                          SHD_ELEMENT_COUNT_A_COLOR,
-                          GL_FLOAT, GL_FALSE,
-                          SHD_STRIDE_A_COLOR,
-                          (void*)SHD_OFFSET_A_COLOR);
-    glEnableVertexAttribArray(SHD_LOCATION_A_COLOR);
-
-    glVertexAttribPointer(SHD_LOCATION_A_TEX_COORD,
-                          SHD_ELEMENT_COUNT_A_TEX_COORD,
-                          GL_FLOAT, GL_FALSE,
-                          SHD_STRIDE_A_TEX_COORD,
-                          (void*)SHD_OFFSET_A_TEX_COORD);
-    glEnableVertexAttribArray(SHD_LOCATION_A_TEX_COORD);
+    aPos.applyAttrib(this);
+    aColor.applyAttrib(this);
+    aTextureCoord.applyAttrib(this);
 }
 
 void cls::initializeGL()
@@ -134,36 +121,33 @@ void cls::initializeGL()
     assert(VAO[0].create());
     VAO[0].bind();
     createBufObjectsForVertices(true);
-    setAttribFroVertexAPos();
+    setAttribs();
     VAO[0].release();
 
+    DEBUG_NM(vertexShaderCode);
+    DEBUG_NM(fragmentShaderCode);
 
-//    assert(VAO[1].create());
-//    VAO[1].bind();
-//    createBufObjectsForVertices(false);
-//    setAttribFroVertexAPos();
-//    VAO[1].release();
 
-    programUsual.initialize(
+    programUsual = new ShaderProgramSet(
+                vertexShaderCode,
+                fragmentShaderCode,
                 QGLContext::currentContext(),
-                this);
-    programUsual.compile();
-    programUsual.link();
+                this, this);
 
-//    createShaders(programYellow);
-//    createProgramWithShaders(programYellow);
-//    deleteShaders(programYellow);
+    programUsual->compile();
+    assert(programUsual->link());
 
-    aTextureHolder.initialize(QGLContext::currentContext(),
-                              this, &programUsual);
 
-    aCameraSetter.initialize(QGLContext::currentContext(),
-                              this, &programUsual);
+//    aTextureHolder.initialize(programUsual);
 
-    aFramebuffer.initialize(QGLContext::currentContext(),
-                            this, &programUsual);
+    aCameraSetter.initialize(programUsual);
 
-    aFramebuffer.create();
+//    aFramebuffer.initialize(programUsual);
+//    aFramebuffer.create();
+
+//    aLighting.initialize(programUsual);
+
+//    aLighting.initVAO(VBO[0]);
 
 }
 
@@ -171,18 +155,22 @@ void cls::paintGL()
 {
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_MIRRORED_REPEAT);
 
-    programUsual.useProgram();
+    programUsual->use();
 
 //    DEBUG("repaint");
 
     glEnable(GL_DEPTH_TEST);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-    aTextureHolder.doPaintWork();
+//    aTextureHolder.doPaintWork();
     aCameraSetter.notifyAboutNewFrame();
 
     VAO[0].bind();
 //    glDrawArrays(GL_TRIANGLES, 0, 3);
+
+//    programUsual->setUniformValue(objectColor.toUtf8().constData(), QVector3D(1.0f, 0.5f, 0.31f));
+//    programUsual->setUniformValue(lightColor.toUtf8().constData(), QVector3D(1.0f, 1.0f, 1.0f));
+
 
     for (size_t i = 0; i < sizeofArray(cubesPositions); ++i)
     {
@@ -195,20 +183,17 @@ void cls::paintGL()
         cubesModelMatrices[i].translate(vecForModelTranslation);
         cubesModelMatrices[i].rotate(rotateAngle, vecForModelRotation);
 
-        programUsual.setUniformMatrixValue(SHD_MODEL_MATRIX_NAME,
-                                           cubesModelMatrices[i].constData());
+        aMatrixHelper.modelMat = cubesModelMatrices[i];
+        aMatrixHelper.loadMatrixToShader(programUsual);
+
         cubesModelMatrices[i].translate(vecForModelTranslation * -1);
 
         glDrawElements(GL_TRIANGLES, 6*6, GL_UNSIGNED_INT, 0);
     }
 
-    programUsual.setUniformMatrixValue(
-                SHD_PROJ_MATRIX_NAME,
-                aCameraSetter.getCurrentProjMatrix().constData());
 
-    programUsual.setUniformMatrixValue(
-                SHD_VIEW_MATRIX_NAME,
-                aCameraSetter.getCurrentViewMatrix().constData());
+    aCameraSetter.updateMatrices();
+
 
     VAO[0].release();
 
@@ -227,11 +212,11 @@ void cls::paintGL()
         isPolygoneModeFill = false;
     }
 
-    static bool isShowFramebuffer = true;
+//    static bool isShowFramebuffer = true;
 
-    if (true/*isShowFramebuffer*/)
+    if (false/*isShowFramebuffer*/)
     {
-        isShowFramebuffer = false;
+//        isShowFramebuffer = false;
         aFramebuffer.getImage();
     }
 }
@@ -271,7 +256,6 @@ void OGL_funcs::keyPressEvent(QKeyEvent *event)
 {
     if (event->key() == Qt::Key_Right)
     {
-        aFramebuffer.getImage();
         aCameraSetter.moveCameraRight();
     }
     else if (event->key() == Qt::Key_Left)
@@ -351,9 +335,9 @@ void OGL_funcs::mouseMoveEvent(QMouseEvent *event)
     // cameraFront: vector -> where camera looks at
     aCameraSetter.cameraFront = front.normalized();
 
-    DEBUG_NM(aCameraSetter.cameraFront);
-    DEBUG_NM(pitch);
-    DEBUG_NM(yaw);
+//    DEBUG_NM(aCameraSetter.cameraFront);
+//    DEBUG_NM(pitch);
+//    DEBUG_NM(yaw);
 }
 
 void OGL_funcs::wheelEvent(QWheelEvent *event)
@@ -377,8 +361,8 @@ void OGL_funcs::wheelEvent(QWheelEvent *event)
     if(aCameraSetter.fov >= 45.0f)
         aCameraSetter.fov = 45.0f;
 
-    DEBUG_NM(yoffset);
-    DEBUG_NM(aCameraSetter.fov);
+//    DEBUG_NM(yoffset);
+//    DEBUG_NM(aCameraSetter.fov);
 }
 
 //void OGL_funcs::mouse(QKeyEvent *event)
