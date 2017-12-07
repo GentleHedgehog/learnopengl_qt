@@ -28,6 +28,11 @@ QString vertexShaderCode =
         "uniform mat4 "+aMatrixHelper.view+";\n"
         "uniform mat4 "+aMatrixHelper.projection+";\n"
 
+         "uniform vec3 "+objectColor+";\n"
+         "uniform vec3 "+lightColor+";\n"
+         "uniform vec3 cameraPos;\n"
+        "out vec3 resultColor;\n"
+
         "void main(){\n"
         "gl_Position = " +
         aMatrixHelper.projection + "*" +
@@ -48,21 +53,6 @@ QString vertexShaderCode =
         // (not efficient - calc on the CPU side):
         "Normal = mat3(transpose(inverse("+aMatrixHelper.model+"))) * aNormal;\n"
 //        "Normal = aNormal;\n"
-        "}";
-
-QString fragmentShaderCode =
-        "#version 330 core\n"
-
-        "out vec4 fragColor;\n"
-        "in vec3 Normal;\n"
-        "in vec3 FragPos;\n"
-        "in vec3 LightPos;\n"
-
-        "uniform vec3 "+objectColor+";\n"
-        "uniform vec3 "+lightColor+";\n"        
-        "uniform vec3 cameraPos;\n"
-
-        "void main(){\n"
 
         "vec3 norm = normalize(Normal);\n"
         "vec3 lightDir = normalize(LightPos - FragPos);\n"
@@ -80,6 +70,18 @@ QString fragmentShaderCode =
         "float ambientKoef = 0.1f;\n"
         "vec3 ambient = lightColor * ambientKoef;\n"
 
-        "fragColor = vec4(objectColor * (diffuse+ambient+specular), 1.0f);\n"
+        "resultColor = vec3(objectColor * (diffuse+ambient+specular));\n"
+
+        "}";
+
+QString fragmentShaderCode =
+        "#version 330 core\n"
+
+        "out vec4 fragColor;\n"
+        "in vec3 resultColor;\n"
+
+
+        "void main(){\n"
+        "fragColor = vec4(resultColor, 1.0f);\n"
         "}";
 
