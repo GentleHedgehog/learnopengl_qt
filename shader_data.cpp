@@ -43,7 +43,9 @@ QString fragmentShaderCode =
         "uniform vec3 "+lightColor+";\n"
 
         "void main(){\n"
-        "fragColor = vec4("+objectColor+" * "+lightColor+", 1.0f);\n"
+        "float ambientKoef = 0.1f;\n"
+        "vec3 ambient = "+lightColor+" * ambientKoef;\n"
+        "fragColor = vec4("+objectColor+" * ambient, 1.0f);\n"
 //          "fragColor = vec4(0.0f, 1.0f, 0.0, 1.0f);\n"
         "}";
 
