@@ -44,9 +44,18 @@ void Lighting::initVAO(QOpenGLBuffer vbo, QOpenGLBuffer ebo)
 
     VAO.release();
 }
-
+#include <QtMath>
 void Lighting::doPaintWork()
 {
+    static float counter = 0.0f;
+    counter += 0.01f;
+
+    float x = 0.0f, z = 0.0f;
+    x = qCos(qDegreesToRadians((float)((int)counter % 360)));
+    z = qSin(qDegreesToRadians((float)((int)counter % 360)));
+
+    lightPos.setX(x);
+    lightPos.setZ(z);
 
     aMatrixHelper.modelMat.translate(lightPos);
     aMatrixHelper.modelMat.scale(0.2f);
