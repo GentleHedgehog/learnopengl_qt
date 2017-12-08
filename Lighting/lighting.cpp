@@ -79,10 +79,19 @@ void Lighting::doPaintWork()
     programSet->setUniformValue("material.shininess",
                                 32.0f);
 
+
+    QVector3D lightColor;
+    lightColor.setX(qSin(qDegreesToRadians((float)((int)counter % 360))) * 2.0f);
+    lightColor.setY(qSin(qDegreesToRadians((float)((int)counter % 360))) * 0.7f);
+    lightColor.setZ(qSin(qDegreesToRadians((float)((int)counter % 360))) * 1.3f);
+
+    QVector3D diffuseColor = lightColor * 0.5f;
+    QVector3D ambientColor = diffuseColor * 0.2f;
+
     programSet->setUniformValue("light.ambient",
-                                QVector3D(0.2f, 0.2f, 0.2f));
+                                ambientColor);
     programSet->setUniformValue("light.diffuse",
-                                QVector3D(0.5f, 0.5f, 0.5f));
+                                diffuseColor);
     programSet->setUniformValue("light.specular",
                                 QVector3D(1.0f, 1.0f, 1.0f));
 }
