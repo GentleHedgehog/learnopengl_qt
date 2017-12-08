@@ -48,21 +48,50 @@ void Lighting::initVAO(QOpenGLBuffer vbo, QOpenGLBuffer ebo)
 void Lighting::doPaintWork()
 {
     static float counter = 0.0f;
-    counter += 0.005f;
+    counter += 0.009f;
 
-    float x = 0.0f, z = 0.0f;
-    x = qCos(qDegreesToRadians((float)((int)counter % 360)));
+    float x = 0.0f, z = 0.0f, y = 0.0f;
+    x = 0.5f/*qCos(qDegreesToRadians((float)((int)counter % 360)))*/;
     z = qSin(qDegreesToRadians((float)((int)counter % 360)));
+    y = qCos(qDegreesToRadians((float)((int)counter % 360)));
 
     lightPos.setX(x);
-    lightPos.setZ(z);
+    lightPos.setY(y);
+    lightPos.setZ(qAbs(z));
 
     aMatrixHelper.modelMat.translate(lightPos);
     aMatrixHelper.modelMat.scale(0.2f);
     aMatrixHelper.loadMatrixToShader(lightingProgram);
     aMatrixHelper.modelMat.translate(lightPos * -1);
 
+    lightingProgram->use();
     VAO.bind();
     glDrawElements(GL_TRIANGLES, 6*6, GL_UNSIGNED_INT, 0);
     VAO.release();
+
+    programSet->use();
+    programSet->setUniformValue("material.ambient",
+                                QVector3D(1.0f, 0.5f, 0.31f));
+    programSet->setUniformValue("material.diffuse",
+                                QVector3D(1.0f, 0.5f, 0.31f));
+    programSet->setUniformValue("material.specular",
+                                QVector3D(0.5f, 0.5f, 0.5f));
+    programSet->setUniformValue("material.shininess",
+                                32.0f);
+
+
+    QVector3D lightColor;
+    lightColor.setX(qSin(qDegreesToRadians((float)((int)counter % 360))) * 2.0f);
+    lightColor.setY(qSin(qDegreesToRadians((float)((int)counter % 360))) * 0.7f);
+    lightColor.setZ(qSin(qDegreesToRadians((float)((int)counter % 360))) * 1.3f);
+
+    QVector3D diffuseColor = lightColor * 0.5f;
+    QVector3D ambientColor = diffuseColor * 0.2f;
+
+    programSet->setUniformValue("light.ambient",
+                                ambientColor);
+    programSet->setUniformValue("light.diffuse",
+                                diffuseColor);
+    programSet->setUniformValue("light.specular",
+                                QVector3D(1.0f, 1.0f, 1.0f));
 }
