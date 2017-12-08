@@ -62,35 +62,40 @@ QString fragmentShaderCode =
         "};\n"
         "uniform Material material;\n"
 
+        "struct Light{\n"
+        "vec3 position;\n"
+        "vec3 ambient;\n"
+        "vec3 diffuse;\n"
+        "vec3 specular;\n"
+        "};\n"
+        "uniform Light light;\n"
+
         "in vec3 Normal;\n"
         "in vec3 FragPos;\n"
         "in vec3 LightPos;\n"
 
         "out vec4 fragColor;\n"
 
-        "uniform vec3 "+objectColor+";\n"
         "uniform vec3 "+lightColor+";\n"
         "uniform vec3 cameraPos;\n"
 
         "void main(){\n"
 
-        "float ambientKoef = 0.1f;\n"
-        "vec3 ambient = lightColor * ambientKoef;\n"
+        "vec3 ambient = lightColor * material.ambient;\n"
 
         "vec3 norm = normalize(Normal);\n"
         "vec3 lightDir = normalize(LightPos - FragPos);\n"
         "float diff = max(dot(norm, lightDir), 0.0f);\n"
-        "vec3 diffuse = diff * lightColor;\n"
+        "vec3 diffuse = (diff * material.diffuse) * lightColor;\n"
 
-        "float specularStrength = 0.5f;\n"
         // both a camera and a fragment position is in the world space:
         "vec3 viewDir = normalize(-FragPos);\n"//cameraPos = 0,0,0
         "vec3 reflectionDir = reflect(-lightDir, norm);\n"
-        "int shininess = 32;\n"
+        "float shininess = material.shininess;\n"
         "float spec = pow(max(dot(viewDir, reflectionDir), 0.0f), shininess);\n"
-        "vec3 specular = specularStrength * spec * lightColor;\n"
+        "vec3 specular = (spec * material.specular) * lightColor;\n"
 
-        "vec3 resultColor = vec3(objectColor * (diffuse+ambient+specular));\n"
+        "vec3 resultColor = diffuse+ambient+specular;\n"
 
         "fragColor = vec4(resultColor, 1.0f);\n"
         "}";
