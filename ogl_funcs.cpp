@@ -5,7 +5,6 @@
 #include "vertex_data.h"
 #include "shader_data.h"
 #include "camera_setter.h"
-#include "texture_holder.h"
 #include "framebuffer.h"
 #include "Lighting/lighting.h"
 #include <QOpenGLBuffer>
@@ -23,7 +22,7 @@ namespace
     bool isChangePolygoneMode = false;
 
     CameraSetter aCameraSetter;
-    TextureHolder aTextureHolder;
+
     Framebuffer aFramebuffer;
 
     float lastMouseX = 400, lastMouseY = 300;

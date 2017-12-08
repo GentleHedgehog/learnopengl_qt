@@ -1,18 +1,19 @@
 #include "texture_holder.h"
 #include <QGLFunctions>
 #include "UsableClass/Macros/macros.h"
-#include <QOpenGLTexture>
+
 
 typedef TextureHolder cls;
 
 namespace {
 
-QOpenGLTexture texture(QOpenGLTexture::Target2D);
-qint32 activeTextureIndex = 0;
 }
 
 
-cls::TextureHolder(QObject *parent) : AccessToQtOpenGl(parent)
+cls::TextureHolder(QObject *parent) :
+    AccessToQtOpenGl(parent),
+    textureDiffuseMap(QOpenGLTexture::Target2D),
+    textureSpecularMap(QOpenGLTexture::Target2D)
 {
 
 }
@@ -27,33 +28,49 @@ void cls::initialize(ShaderProgramSet *prog)
 
 void cls::doPaintWork()
 {
-    texture.bind(0);
+//    DEBUG_NM("do paint");
+    textureDiffuseMap.bind(0);
+    textureSpecularMap.bind(1);
 }
 
 void cls::textureSettings()
 {
-    texture.setWrapMode(QOpenGLTexture::MirroredRepeat);
+//    DEBUG_NM("settings");
+
+    textureDiffuseMap.setWrapMode(QOpenGLTexture::MirroredRepeat);
     // linearly interpolates between the
     // two closest mipmaps and samples
     // the texture via linear interpolation:
-    texture.setMagnificationFilter(QOpenGLTexture::LinearMipMapLinear);
-    texture.setMagnificationFilter(QOpenGLTexture::Linear);
+    textureDiffuseMap.setMagnificationFilter(QOpenGLTexture::LinearMipMapLinear);
+    textureDiffuseMap.setMagnificationFilter(QOpenGLTexture::Linear);
+
+    textureSpecularMap.setWrapMode(QOpenGLTexture::MirroredRepeat);
+    textureSpecularMap.setMagnificationFilter(QOpenGLTexture::LinearMipMapLinear);
+    textureSpecularMap.setMagnificationFilter(QOpenGLTexture::Linear);
 
     programSet->use();
-    programSet->setUniformValue("material.diffuse", activeTextureIndex);
+    programSet->setUniformValue("material.diffuse", indexForDiffuseMap);
+    programSet->setUniformValue("material.specular", indexForSpecularMap);
 
 }
 
 void cls::generateTextures()
 {
-    assert (texture.create());
+//    DEBUG_NM("gen");
+    assert (textureDiffuseMap.create());
+    assert (textureSpecularMap.create());
 
     QImage img(":/images/metal_wood_box.png");
     img = img.mirrored();
 
-    texture.bind(activeTextureIndex);
+    QImage img2(":/images/metal_wood_box_specular_map.png");
+    img2 = img2.mirrored();
 
-    texture.setData(img);
+    textureDiffuseMap.bind(indexForDiffuseMap);
+    textureDiffuseMap.setData(img);
+
+    textureSpecularMap.bind(indexForSpecularMap);
+    textureSpecularMap.setData(img2);
 
 }
 

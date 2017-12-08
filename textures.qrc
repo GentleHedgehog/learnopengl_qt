@@ -3,5 +3,6 @@
         <file>images/firstTexture.png</file>
         <file>images/secondTex.png</file>
         <file>images/metal_wood_box.png</file>
+        <file>images/metal_wood_box_specular_map.png</file>
     </qresource>
 </RCC>

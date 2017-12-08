@@ -60,7 +60,7 @@ QString fragmentShaderCode =
 
         "struct Material{\n"
         "sampler2D diffuse;\n"
-        "vec3 specular;\n"
+        "sampler2D specular;\n"
         "float shininess;\n"
         "};\n"
         "uniform Material material;\n"
@@ -97,7 +97,7 @@ QString fragmentShaderCode =
         "vec3 reflectionDir = reflect(-lightDir, norm);\n"
         "float shininess = material.shininess;\n"
         "float spec = pow(max(dot(viewDir, reflectionDir), 0.0f), shininess);\n"
-        "vec3 specular = (spec * material.specular) * light.specular;\n"
+        "vec3 specular = (spec * vec3(texture(material.specular, TexCoords))) * light.specular;\n"
 
         "vec3 resultColor = diffuse+ambient+specular;\n"
 

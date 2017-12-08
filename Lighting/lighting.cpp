@@ -52,7 +52,7 @@ void Lighting::doPaintWork()
     counter += 0.009f;
 
     float x = 0.0f, z = 0.0f, y = 0.0f;
-    x = 0.5f/*qCos(qDegreesToRadians((float)((int)counter % 360)))*/;
+    x = 0.25f/*qCos(qDegreesToRadians((float)((int)counter % 360)))*/;
     z = qSin(qDegreesToRadians((float)((int)counter % 360)));
     y = qCos(qDegreesToRadians((float)((int)counter % 360)));
 
