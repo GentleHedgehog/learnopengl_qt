@@ -132,11 +132,6 @@ void cls::initializeGL()
 void OGL_funcs::render()
 {
     programUsual->use();
-    programUsual->setUniformValue(objectColor.toUtf8().constData(),
-                                QVector3D(1.0f, 0.5f, 0.31f));
-    programUsual->setUniformValue(lightColor.toUtf8().constData(),
-                                QVector3D(1.0f, 1.0f, 1.0f));
-
     programUsual->setUniformValue("lightPos",
                                   aLighting.lightPos);
     programUsual->setUniformValue("cameraPos",

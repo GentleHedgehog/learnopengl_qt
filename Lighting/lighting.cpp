@@ -51,11 +51,11 @@ void Lighting::doPaintWork()
     counter += 0.009f;
 
     float x = 0.0f, z = 0.0f, y = 0.0f;
-    x = qCos(qDegreesToRadians((float)((int)counter % 360)));
+    x = 0.5f/*qCos(qDegreesToRadians((float)((int)counter % 360)))*/;
     z = qSin(qDegreesToRadians((float)((int)counter % 360)));
     y = qCos(qDegreesToRadians((float)((int)counter % 360)));
 
-    lightPos.setX(0.5);
+    lightPos.setX(x);
     lightPos.setY(y);
     lightPos.setZ(qAbs(z));
 
@@ -78,4 +78,11 @@ void Lighting::doPaintWork()
                                 QVector3D(0.5f, 0.5f, 0.5f));
     programSet->setUniformValue("material.shininess",
                                 32.0f);
+
+    programSet->setUniformValue("light.ambient",
+                                QVector3D(0.2f, 0.2f, 0.2f));
+    programSet->setUniformValue("light.diffuse",
+                                QVector3D(0.5f, 0.5f, 0.5f));
+    programSet->setUniformValue("light.specular",
+                                QVector3D(1.0f, 1.0f, 1.0f));
 }

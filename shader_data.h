@@ -8,9 +8,6 @@ extern sVertexAttributesHelper aPos, aNormal;
 
 extern sMatrixHelper<QMatrix4x4> aMatrixHelper;
 
-extern QString objectColor;
-extern QString lightColor;
-
 extern QString vertexShaderCode;
 extern QString fragmentShaderCode;
 

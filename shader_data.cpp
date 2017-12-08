@@ -5,9 +5,6 @@ VA_HELPER_VERTEX_NORMAL(aPos, 0, aNormal, 1);
 
 sMatrixHelper<QMatrix4x4> aMatrixHelper;
 
-QString objectColor = "objectColor";
-QString lightColor = "lightColor";
-
 QString vertexShaderCode =
         "#version 330 core\n"
 
@@ -76,24 +73,23 @@ QString fragmentShaderCode =
 
         "out vec4 fragColor;\n"
 
-        "uniform vec3 "+lightColor+";\n"
         "uniform vec3 cameraPos;\n"
 
         "void main(){\n"
 
-        "vec3 ambient = lightColor * material.ambient;\n"
+        "vec3 ambient = light.ambient * material.ambient;\n"
 
         "vec3 norm = normalize(Normal);\n"
         "vec3 lightDir = normalize(LightPos - FragPos);\n"
         "float diff = max(dot(norm, lightDir), 0.0f);\n"
-        "vec3 diffuse = (diff * material.diffuse) * lightColor;\n"
+        "vec3 diffuse = (diff * material.diffuse) * light.diffuse;\n"
 
         // both a camera and a fragment position is in the world space:
         "vec3 viewDir = normalize(-FragPos);\n"//cameraPos = 0,0,0
         "vec3 reflectionDir = reflect(-lightDir, norm);\n"
         "float shininess = material.shininess;\n"
         "float spec = pow(max(dot(viewDir, reflectionDir), 0.0f), shininess);\n"
-        "vec3 specular = (spec * material.specular) * lightColor;\n"
+        "vec3 specular = (spec * material.specular) * light.specular;\n"
 
         "vec3 resultColor = diffuse+ambient+specular;\n"
 
