@@ -28,11 +28,6 @@ QString vertexShaderCode =
         "uniform mat4 "+aMatrixHelper.view+";\n"
         "uniform mat4 "+aMatrixHelper.projection+";\n"
 
-         "uniform vec3 "+objectColor+";\n"
-         "uniform vec3 "+lightColor+";\n"
-         "uniform vec3 cameraPos;\n"
-        "out vec3 resultColor;\n"
-
         "void main(){\n"
         "gl_Position = " +
         aMatrixHelper.projection + "*" +
@@ -51,8 +46,36 @@ QString vertexShaderCode =
 
         // calc with Normal matrix to consider changes in the model matrix for normals
         // (not efficient - calc on the CPU side):
-        "Normal = mat3(transpose(inverse("+aMatrixHelper.model+"))) * aNormal;\n"
+        "Normal = mat3(transpose(inverse("+aMatrixHelper.view + "*" + aMatrixHelper.model+"))) * aNormal;\n"
 //        "Normal = aNormal;\n"
+
+        "}";
+
+QString fragmentShaderCode =
+        "#version 330 core\n"
+
+        "struct Material{\n"
+        "vec3 ambient;\n"
+        "vec3 diffuse;\n"
+        "vec3 specular;\n"
+        "float shininess;\n"
+        "};\n"
+        "uniform Material material;\n"
+
+        "in vec3 Normal;\n"
+        "in vec3 FragPos;\n"
+        "in vec3 LightPos;\n"
+
+        "out vec4 fragColor;\n"
+
+        "uniform vec3 "+objectColor+";\n"
+        "uniform vec3 "+lightColor+";\n"
+        "uniform vec3 cameraPos;\n"
+
+        "void main(){\n"
+
+        "float ambientKoef = 0.1f;\n"
+        "vec3 ambient = lightColor * ambientKoef;\n"
 
         "vec3 norm = normalize(Normal);\n"
         "vec3 lightDir = normalize(LightPos - FragPos);\n"
@@ -61,27 +84,14 @@ QString vertexShaderCode =
 
         "float specularStrength = 0.5f;\n"
         // both a camera and a fragment position is in the world space:
-        "vec3 viewDir = normalize(-FragPos);\n"//cameraPos
+        "vec3 viewDir = normalize(-FragPos);\n"//cameraPos = 0,0,0
         "vec3 reflectionDir = reflect(-lightDir, norm);\n"
         "int shininess = 32;\n"
         "float spec = pow(max(dot(viewDir, reflectionDir), 0.0f), shininess);\n"
         "vec3 specular = specularStrength * spec * lightColor;\n"
 
-        "float ambientKoef = 0.1f;\n"
-        "vec3 ambient = lightColor * ambientKoef;\n"
+        "vec3 resultColor = vec3(objectColor * (diffuse+ambient+specular));\n"
 
-        "resultColor = vec3(objectColor * (diffuse+ambient+specular));\n"
-
-        "}";
-
-QString fragmentShaderCode =
-        "#version 330 core\n"
-
-        "out vec4 fragColor;\n"
-        "in vec3 resultColor;\n"
-
-
-        "void main(){\n"
         "fragColor = vec4(resultColor, 1.0f);\n"
         "}";
 
