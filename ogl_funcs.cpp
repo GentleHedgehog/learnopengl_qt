@@ -5,7 +5,6 @@
 #include "vertex_data.h"
 #include "shader_data.h"
 #include "camera_setter.h"
-#include "texture_holder.h"
 #include "framebuffer.h"
 #include "Lighting/lighting.h"
 #include <QOpenGLBuffer>
@@ -23,7 +22,7 @@ namespace
     bool isChangePolygoneMode = false;
 
     CameraSetter aCameraSetter;
-    TextureHolder aTextureHolder;
+
     Framebuffer aFramebuffer;
 
     float lastMouseX = 400, lastMouseY = 300;
@@ -76,6 +75,7 @@ void cls::setAttribs()
 {
     aPos.applyAttrib(this);
     aNormal.applyAttrib(this);
+    aTexture.applyAttrib(this);
 }
 
 void cls::initializeGL()
@@ -116,7 +116,7 @@ void cls::initializeGL()
     assert(programUsual->link());
 
 
-//    aTextureHolder.initialize(programUsual);
+    aTextureHolder.initialize(programUsual);
 
     aCameraSetter.initialize(programUsual);
 
@@ -164,17 +164,13 @@ void OGL_funcs::render()
 
 void cls::paintGL()
 {
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_MIRRORED_REPEAT);
-
-//    DEBUG("repaint");
-
     glEnable(GL_DEPTH_TEST);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 
     render();
 
-//    aTextureHolder.doPaintWork();
+    aTextureHolder.doPaintWork();
     aCameraSetter.notifyAboutNewFrame();
     aCameraSetter.updateMatrices();
 

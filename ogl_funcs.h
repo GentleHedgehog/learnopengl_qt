@@ -4,6 +4,7 @@
 #include <QGLWidget>
 #include <QGLFunctions>
 #include <QTimer>
+#include "texture_holder.h"
 
 
 class OGL_funcs :
@@ -20,6 +21,8 @@ public slots:
 private:
     QTimer timer;
     QTimer timerForFrameBuffer;
+
+    TextureHolder aTextureHolder;
 
 
     void createBufObjectsForVertices();

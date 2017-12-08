@@ -4,7 +4,7 @@
 #include "shader_helpers.h"
 
 
-extern sVertexAttributesHelper aPos, aNormal;
+extern sVertexAttributesHelper aPos, aNormal, aTexture;
 
 extern sMatrixHelper<QMatrix4x4> aMatrixHelper;
 

@@ -1,16 +1,19 @@
 #include "texture_holder.h"
 #include <QGLFunctions>
+#include "UsableClass/Macros/macros.h"
+
 
 typedef TextureHolder cls;
 
 namespace {
 
-quint32 texId[2] = {0};
-
 }
 
 
-cls::TextureHolder(QObject *parent) : AccessToQtOpenGl(parent)
+cls::TextureHolder(QObject *parent) :
+    AccessToQtOpenGl(parent),
+    textureDiffuseMap(QOpenGLTexture::Target2D),
+    textureSpecularMap(QOpenGLTexture::Target2D)
 {
 
 }
@@ -25,82 +28,49 @@ void cls::initialize(ShaderProgramSet *prog)
 
 void cls::doPaintWork()
 {
-//    programSet->use();
-//    programSet->setUniformValue("mixValue", mixValueFromUser);
-
-
-//    //    glEnable(GL_BLEND);
-//    //    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-//    f->glActiveTexture(GL_TEXTURE0);
-//    glBindTexture(GL_TEXTURE_2D, texId[0]);
-//    f->glActiveTexture(GL_TEXTURE1);
-//    glBindTexture(GL_TEXTURE_2D, texId[1]);
+//    DEBUG_NM("do paint");
+    textureDiffuseMap.bind(0);
+    textureSpecularMap.bind(1);
 }
 
 void cls::textureSettings()
 {
-//    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_MIRRORED_REPEAT);
-//    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_MIRRORED_REPEAT);
-//    //    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-//    // linearly interpolates between the
-//    // two closest mipmaps and samples
-//    // the texture via linear interpolation:
-//    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
-//    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+//    DEBUG_NM("settings");
 
-//    programSet->use();
+    textureDiffuseMap.setWrapMode(QOpenGLTexture::MirroredRepeat);
+    // linearly interpolates between the
+    // two closest mipmaps and samples
+    // the texture via linear interpolation:
+    textureDiffuseMap.setMagnificationFilter(QOpenGLTexture::LinearMipMapLinear);
+    textureDiffuseMap.setMagnificationFilter(QOpenGLTexture::Linear);
 
-//    qint32 activeTextureIndex = 0;
-//    programSet->setUniformValue("ourTexture1", activeTextureIndex);
-//    activeTextureIndex = 1;
-//    programSet->setUniformValue("ourTexture2", activeTextureIndex);
-//    programSet->setUniformValue("mixValue", mixValueFromUser);
+    textureSpecularMap.setWrapMode(QOpenGLTexture::MirroredRepeat);
+    textureSpecularMap.setMagnificationFilter(QOpenGLTexture::LinearMipMapLinear);
+    textureSpecularMap.setMagnificationFilter(QOpenGLTexture::Linear);
+
+    programSet->use();
+    programSet->setUniformValue("material.diffuse", indexForDiffuseMap);
+    programSet->setUniformValue("material.specular", indexForSpecularMap);
 
 }
 
 void cls::generateTextures()
 {
-//    quint32 texCountForGen = 2;
-//    glGenTextures(texCountForGen, texId);
+//    DEBUG_NM("gen");
+    assert (textureDiffuseMap.create());
+    assert (textureSpecularMap.create());
 
-//    QImage img(":/images/firstTexture.png");
-//    QImage img2(":/images/secondTex.png");
-//    img = img.mirrored();
-//    img2 = img2.mirrored();
-////    DEBUG_NM(img.hasAlphaChannel());
-////    DEBUG_NM(img2.hasAlphaChannel());
-////    DEBUG_NM(img.format());  // 4
-////    DEBUG_NM(img2.format()); // 5?
+    QImage img(":/images/metal_wood_box.png");
+    img = img.mirrored();
 
-////    DEBUG_NM(img2.isNull());
-////    DEBUG_NM(img2.size());
+    QImage img2(":/images/metal_wood_box_specular_map.png");
+    img2 = img2.mirrored();
 
-////    DEBUG_NM(img.format());
-////    QImage::Format_RGB32
-////    4
-////    The image is stored using a 32-bit RGB format (0xffRRGGBB).
+    textureDiffuseMap.bind(indexForDiffuseMap);
+    textureDiffuseMap.setData(img);
 
-
-//    const GLint mipmapLevel = 0;
-//    const GLint borderLegacyStuff = 0;
-
-//    f->glActiveTexture(GL_TEXTURE0);
-//    glBindTexture(GL_TEXTURE_2D, texId[0]);
-
-//    glTexImage2D(GL_TEXTURE_2D, mipmapLevel,
-//                 GL_RGBA, img.width(), img.height(),
-//                 borderLegacyStuff, GL_BGRA, GL_UNSIGNED_BYTE,
-//                 img.bits());
-//    f->glGenerateMipmap(GL_TEXTURE_2D);
-
-//    f->glActiveTexture(GL_TEXTURE1);
-//    glBindTexture(GL_TEXTURE_2D, texId[1]);
-
-//    glTexImage2D(GL_TEXTURE_2D, mipmapLevel,
-//                 GL_RGBA, img2.width(), img2.height(),
-//                 borderLegacyStuff, GL_BGRA, GL_UNSIGNED_BYTE,
-//                 img2.bits());
-//    f->glGenerateMipmap(GL_TEXTURE_2D);
+    textureSpecularMap.bind(indexForSpecularMap);
+    textureSpecularMap.setData(img2);
 
 }
 

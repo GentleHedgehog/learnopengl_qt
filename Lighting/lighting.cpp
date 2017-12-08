@@ -41,6 +41,7 @@ void Lighting::initVAO(QOpenGLBuffer vbo, QOpenGLBuffer ebo)
 
     aPos.applyAttrib(f);
     aNormal.applyAttrib(f);
+    aTexture.applyAttrib(f);
 
     VAO.release();
 }
@@ -51,7 +52,7 @@ void Lighting::doPaintWork()
     counter += 0.009f;
 
     float x = 0.0f, z = 0.0f, y = 0.0f;
-    x = 0.5f/*qCos(qDegreesToRadians((float)((int)counter % 360)))*/;
+    x = 0.25f/*qCos(qDegreesToRadians((float)((int)counter % 360)))*/;
     z = qSin(qDegreesToRadians((float)((int)counter % 360)));
     y = qCos(qDegreesToRadians((float)((int)counter % 360)));
 
@@ -70,20 +71,21 @@ void Lighting::doPaintWork()
     VAO.release();
 
     programSet->use();
-    programSet->setUniformValue("material.ambient",
-                                QVector3D(1.0f, 0.5f, 0.31f));
-    programSet->setUniformValue("material.diffuse",
-                                QVector3D(1.0f, 0.5f, 0.31f));
+//    programSet->setUniformValue("material.ambient",
+//                                QVector3D(1.0f, 0.5f, 0.31f));
+
+//    programSet->setUniformValue("material.diffuse",
+//                                QVector3D(1.0f, 0.5f, 0.31f));
     programSet->setUniformValue("material.specular",
                                 QVector3D(0.5f, 0.5f, 0.5f));
     programSet->setUniformValue("material.shininess",
                                 32.0f);
 
 
-    QVector3D lightColor;
-    lightColor.setX(qSin(qDegreesToRadians((float)((int)counter % 360))) * 2.0f);
-    lightColor.setY(qSin(qDegreesToRadians((float)((int)counter % 360))) * 0.7f);
-    lightColor.setZ(qSin(qDegreesToRadians((float)((int)counter % 360))) * 1.3f);
+    QVector3D lightColor(1, 1, 1);
+//    lightColor.setX(qSin(qDegreesToRadians((float)((int)counter % 360))) * 2.0f);
+//    lightColor.setY(qSin(qDegreesToRadians((float)((int)counter % 360))) * 0.7f);
+//    lightColor.setZ(qSin(qDegreesToRadians((float)((int)counter % 360))) * 1.3f);
 
     QVector3D diffuseColor = lightColor * 0.5f;
     QVector3D ambientColor = diffuseColor * 0.2f;
