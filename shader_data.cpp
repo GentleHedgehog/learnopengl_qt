@@ -51,7 +51,7 @@ QString vertexShaderCode =
 
         // calc with Normal matrix to consider changes in the model matrix for normals
         // (not efficient - calc on the CPU side):
-        "Normal = mat3(transpose(inverse("+aMatrixHelper.model+"))) * aNormal;\n"
+        "Normal = mat3(transpose(inverse("+aMatrixHelper.view + "*" + aMatrixHelper.model+"))) * aNormal;\n"
 //        "Normal = aNormal;\n"
 
         "vec3 norm = normalize(Normal);\n"
