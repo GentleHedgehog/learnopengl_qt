@@ -90,11 +90,16 @@ struct sVertexAttributesHelper
 #undef VA_HELPER_VERTEX_NORMAL
 #define VA_HELPER_VERTEX_NORMAL(nameVertex, locationVertex, \
                                 nameNormal, locationNormal) \
-    VERTEX_ATTRIBUTES_HELPER(nameVertex, locationVertex, \
-                             3, 6 * sizeof(GL_FLOAT), 0);\
-    VERTEX_ATTRIBUTES_HELPER(nameNormal, locationNormal, \
-                             3, 6 * sizeof(GL_FLOAT), \
-                             3 * sizeof(GL_FLOAT))
+    VA_HELPER_VERTEX_COLOR(nameVertex, locationVertex, \
+                           nameNormal, locationNormal)
+
+#undef VA_HELPER_VERTEX_NORMAL_TEXTURE
+#define VA_HELPER_VERTEX_NORMAL_TEXTURE(nameVertex, locationVertex, \
+                                        nameNormal, locationNormal,\
+                                        nameTexture, locationTexture) \
+    VA_HELPER_VERTEX_COLOR_TEXTURE(nameVertex, locationVertex, \
+                                   nameNormal, locationNormal,\
+                                   nameTexture, locationTexture)
 
 
 

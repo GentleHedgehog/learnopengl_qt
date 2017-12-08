@@ -76,6 +76,7 @@ void cls::setAttribs()
 {
     aPos.applyAttrib(this);
     aNormal.applyAttrib(this);
+    aTexture.applyAttrib(this);
 }
 
 void cls::initializeGL()
@@ -116,7 +117,7 @@ void cls::initializeGL()
     assert(programUsual->link());
 
 
-//    aTextureHolder.initialize(programUsual);
+    aTextureHolder.initialize(programUsual);
 
     aCameraSetter.initialize(programUsual);
 
@@ -174,7 +175,7 @@ void cls::paintGL()
 
     render();
 
-//    aTextureHolder.doPaintWork();
+    aTextureHolder.doPaintWork();
     aCameraSetter.notifyAboutNewFrame();
     aCameraSetter.updateMatrices();
 
