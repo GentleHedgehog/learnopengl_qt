@@ -67,7 +67,7 @@ QString fragmentShaderCode =
 
 
         "struct Light{\n"
-        "vec3 position;\n"
+        "vec3 directionFromLightSource;\n"
         "vec3 ambient;\n"
         "vec3 diffuse;\n"
         "vec3 specular;\n"
@@ -88,11 +88,10 @@ QString fragmentShaderCode =
         "vec3 ambient = light.ambient * vec3(texture(material.diffuse, TexCoords));\n"
 
         "vec3 norm = normalize(Normal);\n"
-        "vec3 lightDir = normalize(LightPos - FragPos);\n"
+        "vec3 lightDir = normalize(-light.directionFromLightSource);\n"
         "float diff = max(dot(norm, lightDir), 0.0f);\n"
         "vec3 diffuse = diff * vec3(texture(material.diffuse, TexCoords)) * light.diffuse;\n"
 
-        // both a camera and a fragment position is in the world space:
         "vec3 viewDir = normalize(-FragPos);\n"//cameraPos = 0,0,0
         "vec3 reflectionDir = reflect(-lightDir, norm);\n"
         "float shininess = material.shininess;\n"
