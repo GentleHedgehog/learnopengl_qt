@@ -134,10 +134,14 @@ void OGL_funcs::render()
     programUsual->use();
     programUsual->setUniformValue("lightPos",
                                   aLighting.lightPos);
-    programUsual->setUniformValue("light.directionFromLightSource",
-                                  QVector3D(2.0f, -1.0f, -0.3f));
     programUsual->setUniformValue("cameraPos",
                                   aCameraSetter.cameraPosition);
+
+//    programUsual->setUniformValue("light.position", aLighting.lightPos);
+    programUsual->setUniformValue("light.constant", 1.0f);
+    programUsual->setUniformValue("light.linear", 0.09f);
+    programUsual->setUniformValue("light.quadratic", 0.032f);
+
 
 
     VAO[0].bind();
@@ -148,7 +152,7 @@ void OGL_funcs::render()
         QVector3D vecForModelTranslation = cubesPositions[i];
         QVector3D vecForModelRotation = QVector3D(0.0, 1.0, 0.0f);
 
-        float rotateAngle = 0.009;//(float)(QTime::currentTime().msec() % 5);
+        float rotateAngle = 0.00/*9*/;//(float)(QTime::currentTime().msec() % 5);
 
 //        cubesModelMatrices[i].setToIdentity();
         cubesModelMatrices[i].translate(vecForModelTranslation);

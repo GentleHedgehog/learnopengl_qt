@@ -31,27 +31,28 @@ QString vertexShaderCode =
         "uniform mat4 "+aMatrixHelper.projection+";\n"
 
         "void main(){\n"
-        "gl_Position = " +
-        aMatrixHelper.projection + "*" +
-        aMatrixHelper.view + "*" +
-        aMatrixHelper.model +
-        " * vec4(" + aPos.name + ", 1.0);\n"
+            "gl_Position = " +
+            aMatrixHelper.projection + "*" +
+            aMatrixHelper.view + "*" +
+            aMatrixHelper.model +
+            " * vec4(" + aPos.name + ", 1.0);\n"
 
-        "FragPos = vec3(" +
-        aMatrixHelper.view + "*" +
-        aMatrixHelper.model +
-        " * vec4(" + aPos.name + ", 1.0));\n"
+            //frag pos in certain space:
+            "FragPos = vec3(" +
+            aMatrixHelper.view + "*" +
+            aMatrixHelper.model +
+            " * vec4(" + aPos.name + ", 1.0));\n"
 
-        "LightPos = vec3(" +
-        aMatrixHelper.view +
-        " * vec4(lightPos, 1.0));\n"
+            "LightPos = vec3(" +
+            aMatrixHelper.view +
+            " * vec4(lightPos, 1.0));\n"
 
-        "TexCoords = aTexture;\n"
+            "TexCoords = aTexture;\n"
 
-        // calc with Normal matrix to consider changes in the model matrix for normals
-        // (not efficient - calc on the CPU side):
-        "Normal = mat3(transpose(inverse("+aMatrixHelper.view + "*" + aMatrixHelper.model+"))) * aNormal;\n"
-//        "Normal = aNormal;\n"
+            // calc with Normal matrix to consider changes in the model matrix for normals
+            // (not efficient - calc on the CPU side):
+            "Normal = mat3(transpose(inverse("+aMatrixHelper.view + "*" + aMatrixHelper.model+"))) * aNormal;\n"
+    //        "Normal = aNormal;\n"
 
         "}";
 
@@ -59,18 +60,25 @@ QString fragmentShaderCode =
         "#version 330 core\n"
 
         "struct Material{\n"
-        "sampler2D diffuse;\n"
-        "sampler2D specular;\n"
-        "float shininess;\n"
+            "sampler2D diffuse;\n"
+            "sampler2D specular;\n"
+            "float shininess;\n"
         "};\n"
         "uniform Material material;\n"
 
 
         "struct Light{\n"
-        "vec3 directionFromLightSource;\n"
-        "vec3 ambient;\n"
-        "vec3 diffuse;\n"
-        "vec3 specular;\n"
+
+            "vec3 position;\n"
+
+            "vec3 ambient;\n"
+            "vec3 diffuse;\n"
+            "vec3 specular;\n"
+
+            "float constant;\n"
+            "float linear;\n"
+            "float quadratic;\n"
+
         "};\n"
         "uniform Light light;\n"
 
@@ -85,21 +93,31 @@ QString fragmentShaderCode =
 
         "void main(){\n"
 
-        "vec3 ambient = light.ambient * vec3(texture(material.diffuse, TexCoords));\n"
+            "vec3 ambient = light.ambient * vec3(texture(material.diffuse, TexCoords));\n"
 
-        "vec3 norm = normalize(Normal);\n"
-        "vec3 lightDir = normalize(-light.directionFromLightSource);\n"
-        "float diff = max(dot(norm, lightDir), 0.0f);\n"
-        "vec3 diffuse = diff * vec3(texture(material.diffuse, TexCoords)) * light.diffuse;\n"
+            "vec3 norm = normalize(Normal);\n"
+            "vec3 lightDir = normalize(LightPos - FragPos);\n"
+            "float diff = max(dot(norm, lightDir), 0.0f);\n"
+            "vec3 diffuse = diff * vec3(texture(material.diffuse, TexCoords)) * light.diffuse;\n"
 
-        "vec3 viewDir = normalize(-FragPos);\n"//cameraPos = 0,0,0
-        "vec3 reflectionDir = reflect(-lightDir, norm);\n"
-        "float shininess = material.shininess;\n"
-        "float spec = pow(max(dot(viewDir, reflectionDir), 0.0f), shininess);\n"
-        "vec3 specular = (spec * vec3(texture(material.specular, TexCoords))) * light.specular;\n"
+            "vec3 viewDir = normalize(-FragPos);\n"//cameraPos = 0,0,0
+            "vec3 reflectionDir = reflect(-lightDir, norm);\n"
+            "float shininess = material.shininess;\n"
+            "float spec = pow(max(dot(viewDir, reflectionDir), 0.0f), shininess);\n"
+            "vec3 specular = (spec * vec3(texture(material.specular, TexCoords))) * light.specular;\n"
 
-        "vec3 resultColor = diffuse+ambient+specular;\n"
+            "float distance = length(LightPos - FragPos);\n"
+            "float attenuation = "
+            "1.0 / ("
+            "light.constant + light.linear * distance +"
+            "light.quadratic * (distance * distance)"
+            ");\n"
+            "ambient *= attenuation;\n"
+            "diffuse *= attenuation;\n"
+            "specular *= attenuation;\n"
 
-        "fragColor = vec4(resultColor, 1.0f);\n"
+            "vec3 resultColor = diffuse+ambient+specular;\n"
+
+            "fragColor = vec4(resultColor, 1.0f);\n"
         "}";
 
