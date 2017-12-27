@@ -56,10 +56,7 @@ void Lighting::doPaintWork()
 //    z = qSin(qDegreesToRadians((float)((int)counter % 360)));
 //    y = qCos(qDegreesToRadians((float)((int)counter % 360)));
 
-//    static bool isGoLeft = true;
-//    static float directionKoef = -1;
-//    x = fmodf(counter, 18.0f) * directionKoef;
-    x = qAbs(qSin(qDegreesToRadians((float)((int)counter % 360)))) * -18.0f;
+//    x = qAbs(qSin(qDegreesToRadians((float)((int)counter % 360)))) * -18.0f;
 
 
     lightPos.setX(x);
@@ -93,8 +90,8 @@ void Lighting::doPaintWork()
 //    lightColor.setY(qSin(qDegreesToRadians((float)((int)counter % 360))) * 0.7f);
 //    lightColor.setZ(qSin(qDegreesToRadians((float)((int)counter % 360))) * 1.3f);
 
-    QVector3D diffuseColor = lightColor * 0.9f;
-    QVector3D ambientColor = diffuseColor * 0.9f;
+    QVector3D diffuseColor = lightColor * 0.5f;
+    QVector3D ambientColor = diffuseColor * 0.2f;
 
     programSet->setUniformValue("light.ambient",
                                 ambientColor);

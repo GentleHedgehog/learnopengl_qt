@@ -77,15 +77,15 @@ unsigned int indices_first_cube[] = {
 };
 
 QVector3D cubesPositions[] = {
-    QVector3D( -2.0f,  0.0f,  0.0f),
-    QVector3D( -4.0f, -0.0f,  0.0f),
-    QVector3D( -6.0f, -0.0f,  0.0f),
-    QVector3D( -8.0f, -0.0f,  0.0f),
-    QVector3D( -10.0f,  0.0f,  0.0f),
-    QVector3D( -12.0f, -0.0f,  0.0f),
-    QVector3D( -14.0f,  0.0f,  0.0f),
-    QVector3D( -16.0f,  0.0f,  0.0f),
-    QVector3D( -18.0f,  0.0f,  0.0f),
+    QVector3D( -2.0f,  0.5f,  0.0f),
+    QVector3D( -3.0f, -0.5f,  0.0f),
+    QVector3D( -4.0f,  0.5f,  0.0f),
+    QVector3D( -5.0f, -0.5f,  0.0f),
+    QVector3D( -6.0f,  0.5f,  0.0f),
+    QVector3D( -7.0f, -0.5f,  0.0f),
+    QVector3D( -8.0f,  0.5f,  0.0f),
+    QVector3D( -9.0f, -0.5f,  0.0f),
+    QVector3D( -10.0f, 0.5f,  0.0f),
     QVector3D( 0.0f,  0.0f,  0.0f),
 };
 

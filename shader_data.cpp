@@ -69,7 +69,7 @@ QString fragmentShaderCode =
 
         "struct Light{\n"
 
-            "vec3 position;\n"
+            "vec3 position;\n" // camera position (if in world coords?)
 
             "vec3 ambient;\n"
             "vec3 diffuse;\n"
@@ -78,6 +78,9 @@ QString fragmentShaderCode =
             "float constant;\n"
             "float linear;\n"
             "float quadratic;\n"
+
+            "vec3 spotlightDirection;\n"
+            "float spotlightCutOff;\n"
 
         "};\n"
         "uniform Light light;\n"
@@ -93,30 +96,48 @@ QString fragmentShaderCode =
 
         "void main(){\n"
 
-            "vec3 ambient = light.ambient * vec3(texture(material.diffuse, TexCoords));\n"
+            "vec3 resultColor;\n"
+            "vec3 ambient = light.ambient * "
+                            "vec3(texture(material.diffuse, "
+                            "TexCoords));\n"
 
-            "vec3 norm = normalize(Normal);\n"
-            "vec3 lightDir = normalize(LightPos - FragPos);\n"
-            "float diff = max(dot(norm, lightDir), 0.0f);\n"
-            "vec3 diffuse = diff * vec3(texture(material.diffuse, TexCoords)) * light.diffuse;\n"
 
-            "vec3 viewDir = normalize(-FragPos);\n"//cameraPos = 0,0,0
-            "vec3 reflectionDir = reflect(-lightDir, norm);\n"
-            "float shininess = material.shininess;\n"
-            "float spec = pow(max(dot(viewDir, reflectionDir), 0.0f), shininess);\n"
-            "vec3 specular = (spec * vec3(texture(material.specular, TexCoords))) * light.specular;\n"
+            "vec3 lightDir = normalize(light.position - FragPos);\n"
+            // angle between spotDir and lightDir:
+            "float theta = dot(lightDir, "
+            "normalize(-light.spotlightDirection));\n"
 
-            "float distance = length(LightPos - FragPos);\n"
-            "float attenuation = "
-            "1.0 / ("
-            "light.constant + light.linear * distance +"
-            "light.quadratic * (distance * distance)"
-            ");\n"
-            "ambient *= attenuation;\n"
-            "diffuse *= attenuation;\n"
-            "specular *= attenuation;\n"
+            "if (theta > light.spotlightCutOff){\n"
 
-            "vec3 resultColor = diffuse+ambient+specular;\n"
+                "vec3 norm = normalize(Normal);\n"
+//                "vec3 lightDir = normalize(LightPos - FragPos);\n"
+                "float diff = max(dot(norm, lightDir), 0.0f);\n"
+                "vec3 diffuse = diff * vec3(texture(material.diffuse, TexCoords)) * light.diffuse;\n"
+
+                "vec3 viewDir = normalize(-FragPos);\n"//cameraPos = 0,0,0
+                "vec3 reflectionDir = reflect(-lightDir, norm);\n"
+                "float shininess = material.shininess;\n"
+                "float spec = pow(max(dot(viewDir, reflectionDir), 0.0f), shininess);\n"
+                "vec3 specular = "
+                "(spec * vec3(texture(material.specular, TexCoords))) *"
+                " light.specular;\n"
+
+                "float distance = length(light.position - FragPos);\n"
+                "float attenuation = "
+                "1.0 / ("
+                "light.constant + light.linear * distance +"
+                "light.quadratic * (distance * distance)"
+                ");\n"
+                "ambient *= attenuation;\n"
+                "diffuse *= attenuation;\n"
+                "specular *= attenuation;\n"
+
+                "resultColor = diffuse+ambient+specular;\n"
+            "}else{\n"
+                "resultColor = ambient;\n"
+            "}\n"
+
+
 
             "fragColor = vec4(resultColor, 1.0f);\n"
         "}";

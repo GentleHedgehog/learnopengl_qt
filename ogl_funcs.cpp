@@ -137,10 +137,17 @@ void OGL_funcs::render()
     programUsual->setUniformValue("cameraPos",
                                   aCameraSetter.cameraPosition);
 
-//    programUsual->setUniformValue("light.position", aLighting.lightPos);
     programUsual->setUniformValue("light.constant", 1.0f);
     programUsual->setUniformValue("light.linear", 0.09f);
     programUsual->setUniformValue("light.quadratic", 0.032f);
+
+    QVector3D cam = {0, 0, 0}/*aCameraSetter.cameraPosition*/;
+    programUsual->setUniformValue("light.position",
+                                  cam);
+    programUsual->setUniformValue("light.spotlightDirection",
+                                  aCameraSetter.cameraFront);
+    programUsual->setUniformValue("light.spotlightCutOff",
+                                  (float)qCos(qDegreesToRadians(12.5)));
 
 
 
