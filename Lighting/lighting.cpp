@@ -63,6 +63,7 @@ void Lighting::doPaintWork()
     lightPos.setY(y);
     lightPos.setZ(qAbs(z));
 
+    aMatrixHelper.modelMat.setToIdentity();
     aMatrixHelper.modelMat.translate(lightPos);
     aMatrixHelper.modelMat.scale(0.2f);
     aMatrixHelper.loadMatrixToShader(lightingProgram);

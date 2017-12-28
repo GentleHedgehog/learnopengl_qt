@@ -159,7 +159,7 @@ void OGL_funcs::render()
         QVector3D vecForModelTranslation = cubesPositions[i];
         QVector3D vecForModelRotation = QVector3D(0.0, 1.0, 0.0f);
 
-        float rotateAngle = 0.00/*9*/;//(float)(QTime::currentTime().msec() % 5);
+        float rotateAngle = 0.009;//(float)(QTime::currentTime().msec() % 5);
 
 //        cubesModelMatrices[i].setToIdentity();
         cubesModelMatrices[i].translate(vecForModelTranslation);

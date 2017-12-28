@@ -64,3 +64,6 @@ TARGET = test_#$${rstr}
 
 RESOURCES += \
     textures.qrc
+
+DISTFILES += \
+    test_shader.frag

@@ -107,7 +107,9 @@ QString fragmentShaderCode =
             "float theta = dot(lightDir, "
             "normalize(-light.spotlightDirection));\n"
 
-            "if (theta > light.spotlightCutOff){\n"
+            "bool isFragWithinLightBeam = theta > light.spotlightCutOff;\n"
+
+            "if (isFragWithinLightBeam){\n"
 
                 "vec3 norm = normalize(Normal);\n"
 //                "vec3 lightDir = normalize(LightPos - FragPos);\n"

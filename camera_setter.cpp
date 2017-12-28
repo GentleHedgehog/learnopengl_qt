@@ -36,7 +36,7 @@ void cls::initialize(ShaderProgramSet *prog)
 
     cameraPosition = QVector3D(0.0f, 0.0f, 3.0f);
     cameraFront = QVector3D(0.0f, 0.0f, -1.0f);
-    cameraUp = QVector3D(0.0f, 1.0f, 0.0f);;
+    cameraUp = QVector3D(0.0f, 1.0f, 0.0f);
 
 //    cameraPosition = QVector3D(0.0f, 0.0f, -3.0f);
 //    cameraTarget = QVector3D(0.0f, 0.0f, 0.0f);

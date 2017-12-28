@@ -77,6 +77,7 @@ unsigned int indices_first_cube[] = {
 };
 
 QVector3D cubesPositions[] = {
+    QVector3D( 0.0f,  0.0f,  0.0f),
     QVector3D( -2.0f,  0.5f,  0.0f),
     QVector3D( -3.0f, -0.5f,  0.0f),
     QVector3D( -4.0f,  0.5f,  0.0f),
@@ -86,7 +87,6 @@ QVector3D cubesPositions[] = {
     QVector3D( -8.0f,  0.5f,  0.0f),
     QVector3D( -9.0f, -0.5f,  0.0f),
     QVector3D( -10.0f, 0.5f,  0.0f),
-    QVector3D( 0.0f,  0.0f,  0.0f),
 };
 
 QMatrix4x4 cubesModelMatrices[sizeof(cubesPositions)/sizeof(cubesPositions[0])];
