@@ -146,8 +146,10 @@ void OGL_funcs::render()
                                   cam);
     programUsual->setUniformValue("light.spotlightDirection",
                                   aCameraSetter.cameraFront);
-    programUsual->setUniformValue("light.spotlightCutOff",
+    programUsual->setUniformValue("light.spotlightInnerCutOff",
                                   (float)qCos(qDegreesToRadians(12.5)));
+    programUsual->setUniformValue("light.spotlightOuterCutOff",
+                                  (float)qCos(qDegreesToRadians(17.5)));
 
 
 

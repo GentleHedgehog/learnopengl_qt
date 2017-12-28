@@ -80,7 +80,8 @@ QString fragmentShaderCode =
             "float quadratic;\n"
 
             "vec3 spotlightDirection;\n"
-            "float spotlightCutOff;\n"
+            "float spotlightOuterCutOff;\n"
+            "float spotlightInnerCutOff;\n"
 
         "};\n"
         "uniform Light light;\n"
@@ -107,37 +108,37 @@ QString fragmentShaderCode =
             "float theta = dot(lightDir, "
             "normalize(-light.spotlightDirection));\n"
 
-            "bool isFragWithinLightBeam = theta > light.spotlightCutOff;\n"
+            "float epsilon = light.spotlightInnerCutOff - light.spotlightOuterCutOff;\n"
+            "float intensity = clamp((theta - light.spotlightOuterCutOff)/epsilon, 0.0, 1.0);\n"
 
-            "if (isFragWithinLightBeam){\n"
 
-                "vec3 norm = normalize(Normal);\n"
+            "vec3 norm = normalize(Normal);\n"
 //                "vec3 lightDir = normalize(LightPos - FragPos);\n"
-                "float diff = max(dot(norm, lightDir), 0.0f);\n"
-                "vec3 diffuse = diff * vec3(texture(material.diffuse, TexCoords)) * light.diffuse;\n"
+            "float diff = max(dot(norm, lightDir), 0.0f);\n"
+            "vec3 diffuse = diff * vec3(texture(material.diffuse, TexCoords)) * light.diffuse;\n"
 
-                "vec3 viewDir = normalize(-FragPos);\n"//cameraPos = 0,0,0
-                "vec3 reflectionDir = reflect(-lightDir, norm);\n"
-                "float shininess = material.shininess;\n"
-                "float spec = pow(max(dot(viewDir, reflectionDir), 0.0f), shininess);\n"
-                "vec3 specular = "
-                "(spec * vec3(texture(material.specular, TexCoords))) *"
-                " light.specular;\n"
+            "vec3 viewDir = normalize(-FragPos);\n"//cameraPos = 0,0,0
+            "vec3 reflectionDir = reflect(-lightDir, norm);\n"
+            "float shininess = material.shininess;\n"
+            "float spec = pow(max(dot(viewDir, reflectionDir), 0.0f), shininess);\n"
+            "vec3 specular = "
+            "(spec * vec3(texture(material.specular, TexCoords))) *"
+            " light.specular;\n"
 
-                "float distance = length(light.position - FragPos);\n"
-                "float attenuation = "
-                "1.0 / ("
-                "light.constant + light.linear * distance +"
-                "light.quadratic * (distance * distance)"
-                ");\n"
-                "ambient *= attenuation;\n"
-                "diffuse *= attenuation;\n"
-                "specular *= attenuation;\n"
+            "float distance = length(light.position - FragPos);\n"
+            "float attenuation = "
+            "1.0 / ("
+            "light.constant + light.linear * distance +"
+            "light.quadratic * (distance * distance)"
+            ");\n"
+//            "ambient *= attenuation;\n"
+//            "diffuse *= attenuation;\n"
+//            "specular *= attenuation;\n"
 
-                "resultColor = diffuse+ambient+specular;\n"
-            "}else{\n"
-                "resultColor = ambient;\n"
-            "}\n"
+            "diffuse *= intensity;\n"
+            "specular *= intensity;\n"
+
+            "resultColor = diffuse+ambient+specular;\n"
 
 
 
