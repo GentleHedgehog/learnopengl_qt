@@ -66,4 +66,5 @@ RESOURCES += \
     textures.qrc
 
 DISTFILES += \
-    test_shader.frag
+    test_shader.frag \
+    README.md
